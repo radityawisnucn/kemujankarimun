@@ -12,7 +12,7 @@ class UmkmController extends Controller
      */
     public function index()
     {
-        return Inertia::render('umkm/umkm-page', [
+        return Inertia::render('pages/umkm/umkm-page', [
             'stats' => [
                 'total_umkm' => 150,
                 'total_products' => 25,
