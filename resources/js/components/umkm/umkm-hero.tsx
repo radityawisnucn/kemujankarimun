@@ -75,59 +75,105 @@ export default function UmkmHero() {
                             
                             {/* Right Content - Floating Cards */}
                             <div className="relative">
-                                {/* Main Project Card */}
-                                <div className="absolute top-8 right-0 bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-2xl max-w-xs">
-                                    <div className="flex items-center justify-between mb-4">
-                                        <h3 className="font-semibold text-gray-900">Discover Our Recent Project</h3>
-                                        <button className="text-gray-400">⋯</button>
-                                    </div>
-                                    
-                                    {/* UMKM Image Placeholder */}
-                                    <div className="w-full h-32 bg-gradient-to-br from-orange-100 to-orange-200 rounded-xl mb-4 flex items-center justify-center">
-                                        <div className="text-center">
-                                            <span className="text-4xl mb-2 block">🏪</span>
-                                            <p className="text-sm text-orange-800 font-medium">UMKM Kemujan</p>
+                                {/* UMKM Unggulan Card - Positioned like reference */}
+                                <div className="absolute top-2 right-8 bg-white rounded-2xl shadow-2xl overflow-hidden max-w-sm border border-gray-100">
+                                    {/* Card Header */}
+                                    <div className="p-6 pb-4">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <h3 className="font-semibold text-gray-900 text-lg">UMKM Unggulan</h3>
+                                            <button className="text-gray-400 hover:text-gray-600">⋯</button>
                                         </div>
                                     </div>
-                                </div>
-
-                
-
-                                {/* Decorative Elements */}
-                                <div className="absolute top-32 left-8 w-20 h-20 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                                    <span className="text-2xl">🌊</span>
-                                </div>
-                                
-                                <div className="absolute bottom-32 left-4 w-16 h-16 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                                    <span className="text-xl">🐟</span>
+                                    
+                                    {/* UMKM Image with Border/Padding like reference */}
+                                    <div className="px-6 pb-4">
+                                        <div className="relative bg-white rounded-xl shadow-lg border-2 border-gray-100 p-4 overflow-hidden">
+                                            {/* Image Container with padding/border effect */}
+                                            <div className="w-full h-36 bg-gradient-to-br from-blue-50 via-green-50 to-orange-50 rounded-lg flex items-center justify-center relative overflow-hidden">
+                                                {/* Seaweed/Ocean Pattern Background */}
+                                                <div className="absolute inset-0 opacity-20">
+                                                    <svg className="w-full h-full" viewBox="0 0 200 150" fill="none">
+                                                        <path d="M20 120 Q30 100 40 120 T60 120 Q70 100 80 120 T100 120" stroke="#10B981" strokeWidth="2" fill="none"/>
+                                                        <path d="M120 130 Q130 110 140 130 T160 130 Q170 110 180 130" stroke="#059669" strokeWidth="2" fill="none"/>
+                                                        <circle cx="50" cy="40" r="15" fill="#3B82F6" opacity="0.3"/>
+                                                        <circle cx="150" cy="30" r="20" fill="#06B6D4" opacity="0.2"/>
+                                                    </svg>
+                                                </div>
+                                                
+                                                {/* Main Content */}
+                                                <div className="text-center z-10">
+                                                    <span className="text-4xl mb-2 block">🌿</span>
+                                                    <p className="text-sm text-gray-700 font-semibold">Keripik Rumput Laut</p>
+                                                    <p className="text-xs text-gray-500">Premium Quality</p>
+                                                </div>
+                                                
+                                                {/* Corner Decoration */}
+                                                <div className="absolute top-2 right-2 w-3 h-3 bg-green-400 rounded-full opacity-60"></div>
+                                                <div className="absolute bottom-2 left-2 w-2 h-2 bg-blue-400 rounded-full opacity-60"></div>
+                                            </div>
+                                            
+                                            {/* Product Info */}
+                                            <div className="mt-3 text-center">
+                                                <p className="text-sm text-gray-600">⭐ 4.8 rating • 150+ pelanggan</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Card Footer */}
+                                    <div className="px-6 pb-6">
+                                        <button className="w-full bg-gradient-to-r from-blue-600 to-green-600 text-white py-2 px-4 rounded-lg text-sm font-medium hover:from-blue-700 hover:to-green-700 transition-all duration-300">
+                                            Lihat Detail
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Statistics Card - Bottom Right Corner */}
-                <div className="absolute bottom-0 right-0 bg-white rounded-tl-3xl p-8 shadow-2xl border-l border-t border-gray-100">
-                    <div className="grid grid-cols-3 gap-8 text-center min-w-[400px]">
-                        <div>
-                            <div className="text-4xl font-bold text-blue-600 mb-2">150+</div>
-                            <div className="text-sm text-gray-600 leading-tight">
-                                UMKM terdaftar<br />
-                                di Kemujan
+                {/* Statistics Card - Bottom Right Corner (Updated Design) */}
+                <div className="absolute bottom-0 right-0 bg-white rounded-tl-3xl shadow-2xl border-l-2 border-t-2 border-gray-100 overflow-hidden">
+                    {/* Background Pattern */}
+                    <div className="absolute inset-0 opacity-5">
+                        <svg className="w-full h-full" viewBox="0 0 400 200" fill="none">
+                            <pattern id="dots" patternUnits="userSpaceOnUse" width="20" height="20">
+                                <circle cx="10" cy="10" r="1" fill="#3B82F6"/>
+                            </pattern>
+                            <rect width="400" height="200" fill="url(#dots)"/>
+                        </svg>
+                    </div>
+                    
+                    <div className="relative z-10 p-8">
+                        <div className="grid grid-cols-3 gap-8 text-center min-w-[400px]">
+                            <div className="group hover:transform hover:scale-105 transition-all duration-300">
+                                <div className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent mb-2">
+                                    150+
+                                </div>
+                                <div className="text-sm text-gray-600 leading-tight">
+                                    UMKM terdaftar<br />
+                                    di Kemujan
+                                </div>
+                                <div className="w-8 h-1 bg-gradient-to-r from-blue-600 to-blue-400 rounded-full mx-auto mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                             </div>
-                        </div>
-                        <div>
-                            <div className="text-4xl font-bold text-green-600 mb-2">25+</div>
-                            <div className="text-sm text-gray-600 leading-tight">
-                                Program unggulan<br />
-                                berkelanjutan
+                            <div className="group hover:transform hover:scale-105 transition-all duration-300">
+                                <div className="text-4xl font-bold bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent mb-2">
+                                    25+
+                                </div>
+                                <div className="text-sm text-gray-600 leading-tight">
+                                    Program unggulan<br />
+                                    berkelanjutan
+                                </div>
+                                <div className="w-8 h-1 bg-gradient-to-r from-green-600 to-green-400 rounded-full mx-auto mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                             </div>
-                        </div>
-                        <div>
-                            <div className="text-4xl font-bold text-orange-600 mb-2">80%</div>
-                            <div className="text-sm text-gray-600 leading-tight">
-                                Sertifikasi HALAL<br />
-                                terakreditasi
+                            <div className="group hover:transform hover:scale-105 transition-all duration-300">
+                                <div className="text-4xl font-bold bg-gradient-to-r from-orange-600 to-orange-700 bg-clip-text text-transparent mb-2">
+                                    80%
+                                </div>
+                                <div className="text-sm text-gray-600 leading-tight">
+                                    Sertifikasi HALAL<br />
+                                    terakreditasi
+                                </div>
+                                <div className="w-8 h-1 bg-gradient-to-r from-orange-600 to-orange-400 rounded-full mx-auto mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                             </div>
                         </div>
                     </div>
@@ -142,7 +188,6 @@ export default function UmkmHero() {
                         <ChevronDown className="w-8 h-8 animate-bounce" />
                     </a>
                 </div>
-
             </section>
         </>
     );

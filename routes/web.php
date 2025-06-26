@@ -93,6 +93,65 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::delete('/{processingMethod}', [ProcessingMethodController::class, 'destroy'])->name('destroy');
     });
 
+    // Tambahkan di bagian ADMIN PROTECTED ROUTES, setelah processing-methods
+
+    // UMKM Management - TAMBAH INI
+    Route::get('/umkm', function () {
+        // Sementara menggunakan data dummy, nanti bisa diganti dengan database
+        return Inertia::render('admin/umkm/index', [
+            'umkm' => [
+                [
+                    'id' => 1,
+                    'nama_umkm' => 'Keripik Rumput Laut Sari Rasa',
+                    'nama_pemilik' => 'Bu Siti',
+                    'alamat' => 'Jl. Pantai Utara No. 12, Kemujan',
+                    'no_telepon' => '081234567890',
+                    'email' => 'siti.sarirasa@gmail.com',
+                    'jenis_produk' => 'Keripik Rumput Laut',
+                    'status' => 'aktif',
+                    'tahun_berdiri' => 2020,
+                    'jumlah_karyawan' => 5,
+                    'omzet_bulanan' => 15000000,
+                    'foto_umkm' => null,
+                    'foto_produk' => null,
+                    'created_at' => '2024-01-15'
+                ],
+                [
+                    'id' => 2,
+                    'nama_umkm' => 'Dodol Rumput Laut Kemujan',
+                    'nama_pemilik' => 'Pak Joko',
+                    'alamat' => 'Desa Kemujan RT 02/01',
+                    'no_telepon' => '082345678901',
+                    'email' => null,
+                    'jenis_produk' => 'Dodol & Manisan',
+                    'status' => 'aktif',
+                    'tahun_berdiri' => 2018,
+                    'jumlah_karyawan' => 8,
+                    'omzet_bulanan' => 22000000,
+                    'foto_umkm' => null,
+                    'foto_produk' => null,
+                    'created_at' => '2024-02-10'
+                ],
+                [
+                    'id' => 3,
+                    'nama_umkm' => 'Selai Rumput Laut Mutiara',
+                    'nama_pemilik' => 'Bu Rina',
+                    'alamat' => 'Kampung Nelayan, Kemujan',
+                    'no_telepon' => '083456789012',
+                    'email' => 'rina.mutiara@yahoo.com',
+                    'jenis_produk' => 'Selai & Sirup',
+                    'status' => 'tidak_aktif',
+                    'tahun_berdiri' => 2019,
+                    'jumlah_karyawan' => 3,
+                    'omzet_bulanan' => 8500000,
+                    'foto_umkm' => null,
+                    'foto_produk' => null,
+                    'created_at' => '2024-01-20'
+                ]
+            ]
+        ]);
+    })->name('admin.umkm.index');
+
     // UMKM Management
     Route::prefix('umkm')->name('umkm.')->group(function () {
         Route::get('/', [AdminUmkmController::class, 'index'])->name('index');

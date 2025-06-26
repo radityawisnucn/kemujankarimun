@@ -5,7 +5,7 @@ import {
     FaBoxOpen,
     FaLeaf,
     FaCogs,
-    FaStore,
+    FaStore,  // 👈 TAMBAH ICON UNTUK UMKM
     FaSignOutAlt,
 } from 'react-icons/fa';
 
@@ -41,6 +41,7 @@ export default function AdminSidebar() {
             href: '/admin/processing-methods',
             color: 'from-purple-500 to-pink-500',
         },
+        // 👈 TAMBAH MENU UMKM
         {
             label: 'UMKM',
             icon: <FaStore />,
