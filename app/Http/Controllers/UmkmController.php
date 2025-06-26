@@ -12,7 +12,8 @@ class UmkmController extends Controller
      */
     public function index()
     {
-        return Inertia::render('pages/umkm/umkm-page', [
+        // PERBAIKAN: Hapus "pages/" dari path Inertia render
+        return Inertia::render('umkm/umkm-page', [
             'stats' => [
                 'total_umkm' => 150,
                 'total_products' => 25,
@@ -54,10 +55,6 @@ class UmkmController extends Controller
             'message' => 'required|string|max:1000'
         ]);
 
-        // Untuk sementara, hanya return success message
-        // Nanti bisa ditambahkan penyimpanan ke database atau kirim email
-        
-        // Contoh log untuk debugging
         \Log::info('UMKM Contact Form Submitted:', $validated);
         
         return back()->with('success', 'Pesan berhasil dikirim! Kami akan segera menghubungi Anda.');

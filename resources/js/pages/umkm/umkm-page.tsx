@@ -25,16 +25,16 @@ interface UmkmPageProps {
 export default function UmkmPage({ stats, featured_products }: UmkmPageProps) {
     return (
         <>
-            <Head title="UMKM Olah Laut Kemujan" />
+            <Head title="UMKM Desa Turus - Polanharjo, Klaten" />
             
             <div className="min-h-screen bg-white">
-                {/* Hero Section */}
+                {/* Hero Section dengan Navigation */}
                 <UmkmHero />
                 
-                {/* About Section - TIDAK PERLU PROPS */}
+                {/* About Section */}
                 <UmkmAbout />
                 
-                {/* Programs Section - TIDAK PERLU PROPS */}
+                {/* Programs Section */}
                 <UmkmPrograms />
                 
                 {/* Gallery Section */}

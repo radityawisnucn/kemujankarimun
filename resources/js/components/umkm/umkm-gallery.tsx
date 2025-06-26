@@ -29,57 +29,52 @@ export default function UmkmGallery() {
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {galleryImages.map((image, index) => (
                         <div 
-                            key={index} 
-                            className="relative group cursor-pointer overflow-hidden rounded-xl"
+                            key={index}
+                            className="relative group cursor-pointer overflow-hidden rounded-xl bg-gray-800"
                             onClick={() => setSelectedImage(image.src)}
                         >
-                            {/* Placeholder for image */}
-                            <div className="aspect-video bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center">
-                                <div className="text-center text-white">
-                                    <div className="w-16 h-16 bg-white/20 rounded-lg mx-auto mb-3 flex items-center justify-center">
-                                        <span className="text-2xl">📸</span>
+                            <div className="aspect-w-16 aspect-h-9 bg-gray-800 p-8 flex items-center justify-center">
+                                <div className="text-center">
+                                    <div className="w-16 h-16 bg-gray-600 rounded-lg mb-4 mx-auto flex items-center justify-center">
+                                        <span className="text-gray-400 text-2xl">📷</span>
                                     </div>
-                                    <p className="font-medium">{image.alt}</p>
-                                    <span className="text-sm text-blue-200">{image.category}</span>
+                                    <h3 className="text-white font-semibold mb-2">{image.alt}</h3>
+                                    <span className="inline-block bg-yellow-400 text-gray-900 px-3 py-1 rounded-full text-sm font-medium">
+                                        {image.category}
+                                    </span>
                                 </div>
                             </div>
                             
-                            {/* Overlay */}
-                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                                <div className="text-white text-center">
-                                    <p className="font-semibold mb-1">{image.alt}</p>
-                                    <span className="text-sm text-yellow-400">{image.category}</span>
-                                </div>
+                            {/* Hover overlay */}
+                            <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                <span className="text-white font-semibold">Lihat Gambar</span>
                             </div>
                         </div>
                     ))}
                 </div>
-            </div>
-            
-            {/* Modal */}
-            {selectedImage && (
-                <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
-                    <div className="relative max-w-4xl w-full">
-                        <button 
-                            onClick={() => setSelectedImage(null)}
-                            className="absolute -top-12 right-0 text-white hover:text-yellow-400 transition-colors"
-                        >
-                            <X className="w-8 h-8" />
-                        </button>
-                        
-                        {/* Placeholder for enlarged image */}
-                        <div className="aspect-video bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg flex items-center justify-center">
-                            <div className="text-center text-white">
-                                <div className="w-24 h-24 bg-white/20 rounded-lg mx-auto mb-4 flex items-center justify-center">
-                                    <span className="text-4xl">📸</span>
+                
+                {/* Modal untuk gambar yang dipilih */}
+                {selectedImage && (
+                    <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
+                        <div className="relative max-w-4xl max-h-full">
+                            <button
+                                onClick={() => setSelectedImage(null)}
+                                className="absolute top-4 right-4 text-white hover:text-gray-300 z-10"
+                            >
+                                <X className="w-8 h-8" />
+                            </button>
+                            <div className="bg-gray-800 p-8 rounded-xl">
+                                <div className="text-center">
+                                    <div className="w-32 h-32 bg-gray-600 rounded-lg mb-4 mx-auto flex items-center justify-center">
+                                        <span className="text-gray-400 text-4xl">📷</span>
+                                    </div>
+                                    <p className="text-white">Gambar akan ditampilkan di sini</p>
                                 </div>
-                                <p className="text-xl font-medium">Preview Gambar</p>
-                                <p className="text-blue-200">Ganti dengan gambar asli</p>
                             </div>
                         </div>
                     </div>
-                </div>
-            )}
+                )}
+            </div>
         </section>
     );
 }

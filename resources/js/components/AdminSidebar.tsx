@@ -5,6 +5,7 @@ import {
     FaBoxOpen,
     FaLeaf,
     FaCogs,
+    FaStore,
     FaSignOutAlt,
 } from 'react-icons/fa';
 
@@ -39,6 +40,12 @@ export default function AdminSidebar() {
             icon: <FaCogs />,
             href: '/admin/processing-methods',
             color: 'from-purple-500 to-pink-500',
+        },
+        {
+            label: 'UMKM',
+            icon: <FaStore />,
+            href: '/admin/umkm',
+            color: 'from-orange-500 to-red-500',
         },
     ];
 

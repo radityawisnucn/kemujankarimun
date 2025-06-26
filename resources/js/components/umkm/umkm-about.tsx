@@ -1,57 +1,122 @@
-import { Users, Target, Award, TrendingUp } from 'lucide-react';
+import { Users, Target, Award, TrendingUp, Play } from 'lucide-react';
 
 export default function UmkmAbout() {
-    const stats = [
-        { icon: Users, label: 'UMKM Terdaftar', value: '150+' },
-        { icon: Target, label: 'Produk Unggulan', value: '25+' },
-        { icon: Award, label: 'Sertifikat HALAL', value: '80%' },
-        { icon: TrendingUp, label: 'Peningkatan Omzet', value: '45%' }
-    ];
-
     return (
-        <section id="about" className="py-20 bg-gray-50">
+        <section id="about" className="py-20 bg-white">
             <div className="container mx-auto px-4">
-                <div className="grid lg:grid-cols-2 gap-12 items-center">
-                    {/* Left Content */}
-                    <div>
-                        <h2 className="text-4xl font-bold text-gray-900 mb-6">
-                            Tentang Program 
-                            <span className="text-blue-600"> UMKM Kami</span>
-                        </h2>
-                        
-                        <p className="text-lg text-gray-600 mb-6 leading-relaxed">
-                            Program UMKM Olah Laut Kemujan merupakan inisiatif untuk memberdayakan masyarakat 
-                            pesisir dalam mengembangkan usaha pengolahan hasil laut yang berkelanjutan dan 
-                            bernilai ekonomi tinggi.
-                        </p>
-                        
-                        <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-                            Melalui pendampingan teknologi, pelatihan, dan akses pasar, kami membantu UMKM 
-                            lokal untuk meningkatkan kualitas produk dan jangkauan pasar mereka.
-                        </p>
-                        
-                        <div className="flex flex-wrap gap-4">
-                            <div className="bg-blue-600 text-white px-6 py-3 rounded-lg">
-                                <span className="font-semibold">Visi:</span> Menjadi pusat UMKM terdepan
+                {/* Section Header */}
+                <div className="text-center mb-16">
+                    <h2 className="text-4xl font-bold text-gray-900 mb-4">
+                        Kenali <span className="text-blue-600">UMKM Turus</span> 💛
+                    </h2>
+                    <div className="w-24 h-1 bg-blue-600 mx-auto"></div>
+                </div>
+
+                <div className="grid lg:grid-cols-2 gap-16 items-center mb-20">
+                    {/* Left Content - Image */}
+                    <div className="relative">
+                        <div className="bg-gray-100 rounded-2xl overflow-hidden shadow-lg">
+                            <div className="aspect-video bg-gradient-to-br from-blue-200 to-blue-300 flex items-center justify-center">
+                                <div className="text-center">
+                                    <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                                        <span className="text-3xl">🏘️</span>
+                                    </div>
+                                    <p className="text-blue-800 font-semibold">Kantor UMKM Turus</p>
+                                </div>
                             </div>
-                            <div className="bg-yellow-500 text-blue-900 px-6 py-3 rounded-lg">
-                                <span className="font-semibold">Misi:</span> Memberdayakan ekonomi lokal
+                        </div>
+                        
+                        {/* Floating Cards */}
+                        <div className="absolute -bottom-6 -right-6 bg-white rounded-xl p-4 shadow-xl border">
+                            <div className="flex items-center space-x-3">
+                                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                    <span className="text-green-600 text-sm">✓</span>
+                                </div>
+                                <div>
+                                    <div className="font-semibold text-gray-900">Profile Desa</div>
+                                    <div className="text-sm text-gray-600">Lengkap & Terpercaya</div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    
-                    {/* Right Stats */}
-                    <div className="grid grid-cols-2 gap-6">
-                        {stats.map((stat, index) => (
-                            <div key={index} className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
-                                <div className="flex items-center justify-between mb-4">
-                                    <stat.icon className="w-8 h-8 text-blue-600" />
-                                    <span className="text-2xl font-bold text-blue-600">{stat.value}</span>
-                                </div>
-                                <p className="text-gray-700 font-medium">{stat.label}</p>
+
+                    {/* Right Content */}
+                    <div>
+                        <div className="space-y-6">
+                            <div className="border-l-4 border-blue-600 pl-6">
+                                <h3 className="text-xl font-semibold text-gray-900 mb-2">🔍 Profile Desa</h3>
+                                <p className="text-gray-600">
+                                    UMKM Turus terletak di Kecamatan Polanharjo, Klaten, Jawa Tengah dengan 
+                                    wilayah yang terdiri dari 4 RW dan 13 RT. Desa ini memiliki potensi besar 
+                                    dalam pengembangan ekonomi kreatif dan pengolahan hasil laut.
+                                </p>
                             </div>
-                        ))}
+                            
+                            <div className="border-l-4 border-green-600 pl-6">
+                                <h3 className="text-xl font-semibold text-gray-900 mb-2">🌊 Sejarah Desa</h3>
+                                <p className="text-gray-600">
+                                    Bermula dari kebutuhan masyarakat untuk mengembangkan ekonomi lokal, 
+                                    UMKM Turus didirikan sebagai wadah pemberdayaan masyarakat dalam 
+                                    mengolah potensi sumber daya alam yang berkelanjutan.
+                                </p>
+                            </div>
+                            
+                            <div className="border-l-4 border-yellow-500 pl-6">
+                                <h3 className="text-xl font-semibold text-gray-900 mb-2">⚡ Visi & Misi Desa</h3>
+                                <p className="text-gray-600">
+                                    Menjadi pusat UMKM terdepan dalam pengolahan hasil laut yang 
+                                    berkelanjutan dan memberdayakan ekonomi masyarakat lokal untuk 
+                                    mencapai kesejahteraan bersama.
+                                </p>
+                            </div>
+                        </div>
                     </div>
+                </div>
+
+                {/* Video Section */}
+                <div className="bg-gray-50 rounded-2xl p-8 mb-16">
+                    <h3 className="text-3xl font-bold text-gray-900 text-center mb-8">
+                        Kenali Desa Turus dalam 10 menit! 📹
+                    </h3>
+                    
+                    <div className="relative max-w-4xl mx-auto">
+                        <div className="aspect-video bg-gray-900 rounded-xl overflow-hidden shadow-lg">
+                            <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
+                                <button className="group">
+                                    <div className="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center group-hover:bg-red-700 transition-colors shadow-lg">
+                                        <Play className="w-8 h-8 text-white ml-1" fill="white" />
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div className="text-center mt-4">
+                            <p className="text-gray-600">
+                                Profile Desa Turus, Polanharjo, Klaten [KKN UNDIP]
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Collaboration Section */}
+                <div className="text-center">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-8">Program KKN UNDIP</h3>
+                    
+                    <div className="flex items-center justify-center space-x-8 mb-6">
+                        <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center">
+                            <span className="text-2xl">🎓</span>
+                        </div>
+                        <div className="text-4xl text-gray-300">~</div>
+                        <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center">
+                            <span className="text-2xl">🏛️</span>
+                        </div>
+                    </div>
+                    
+                    <p className="text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                        Pada tahun 1971, Departemen Pendidikan dan Kebudayaan memulai program pengabdian 
+                        masyarakat yang menjadi Kuliah Kerja Nyata (KKN) di UNDIP, mengintegrasikan 
+                        pendidikan, penelitian, dan pengabdian masyarakat untuk pemberdayaan komunitas lokal.
+                    </p>
                 </div>
             </div>
         </section>
