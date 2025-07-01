@@ -26,10 +26,25 @@ Route::get('/products', [ProductController::class, 'productIndex'])->name('produ
 Route::get('/seaweed-type', [SeaweedTypeController::class, 'userIndex'])->name('seaweed-type.public.index');
 Route::get('/user/processing-methods', [ProcessingMethodController::class, 'publicIndex'])->name('processing-methods.public.index');
 
-// UMKM Routes (Public) - Updated for dynamic data
+// ==========================================
+// UMKM ROUTES (PUBLIC) - UPDATED
+// ==========================================
+
+// Route utama UMKM - halaman landing
 Route::get('/umkm', [UmkmController::class, 'index'])->name('umkm.index');
+
+// Route untuk daftar UMKM dengan filter (akan menampilkan halaman umkm-list)
+Route::get('/umkm/list', function(Request $request) {
+    return app(UmkmController::class)->getFilteredUmkms($request);
+})->name('umkm.list');
+
+// Route detail UMKM
 Route::get('/umkm/{umkm}', [UmkmController::class, 'show'])->name('umkm.show');
+
+// Route untuk contact form
 Route::post('/umkm/contact', [UmkmController::class, 'store'])->name('umkm.contact.store');
+
+// API route untuk filter kategori
 Route::get('/api/umkm/category', [UmkmController::class, 'getByCategory'])->name('api.umkm.category');
 
 // ==========================================
@@ -94,64 +109,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     });
 
     // Tambahkan di bagian ADMIN PROTECTED ROUTES, setelah processing-methods
-
-    // UMKM Management - TAMBAH INI
-    Route::get('/umkm', function () {
-        // Sementara menggunakan data dummy, nanti bisa diganti dengan database
-        return Inertia::render('admin/umkm/index', [
-            'umkm' => [
-                [
-                    'id' => 1,
-                    'nama_umkm' => 'Keripik Rumput Laut Sari Rasa',
-                    'nama_pemilik' => 'Bu Siti',
-                    'alamat' => 'Jl. Pantai Utara No. 12, Kemujan',
-                    'no_telepon' => '081234567890',
-                    'email' => 'siti.sarirasa@gmail.com',
-                    'jenis_produk' => 'Keripik Rumput Laut',
-                    'status' => 'aktif',
-                    'tahun_berdiri' => 2020,
-                    'jumlah_karyawan' => 5,
-                    'omzet_bulanan' => 15000000,
-                    'foto_umkm' => null,
-                    'foto_produk' => null,
-                    'created_at' => '2024-01-15'
-                ],
-                [
-                    'id' => 2,
-                    'nama_umkm' => 'Dodol Rumput Laut Kemujan',
-                    'nama_pemilik' => 'Pak Joko',
-                    'alamat' => 'Desa Kemujan RT 02/01',
-                    'no_telepon' => '082345678901',
-                    'email' => null,
-                    'jenis_produk' => 'Dodol & Manisan',
-                    'status' => 'aktif',
-                    'tahun_berdiri' => 2018,
-                    'jumlah_karyawan' => 8,
-                    'omzet_bulanan' => 22000000,
-                    'foto_umkm' => null,
-                    'foto_produk' => null,
-                    'created_at' => '2024-02-10'
-                ],
-                [
-                    'id' => 3,
-                    'nama_umkm' => 'Selai Rumput Laut Mutiara',
-                    'nama_pemilik' => 'Bu Rina',
-                    'alamat' => 'Kampung Nelayan, Kemujan',
-                    'no_telepon' => '083456789012',
-                    'email' => 'rina.mutiara@yahoo.com',
-                    'jenis_produk' => 'Selai & Sirup',
-                    'status' => 'tidak_aktif',
-                    'tahun_berdiri' => 2019,
-                    'jumlah_karyawan' => 3,
-                    'omzet_bulanan' => 8500000,
-                    'foto_umkm' => null,
-                    'foto_produk' => null,
-                    'created_at' => '2024-01-20'
-                ]
-            ]
-        ]);
-    })->name('admin.umkm.index');
-
     // UMKM Management
     Route::prefix('umkm')->name('umkm.')->group(function () {
         Route::get('/', [AdminUmkmController::class, 'index'])->name('index');
@@ -167,6 +124,23 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::post('/{umkm}/toggle-active', [AdminUmkmController::class, 'toggleActive'])->name('toggle-active');
     });
 });
+
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    // UMKM Management
+    Route::prefix('umkm')->name('umkm.')->group(function () {
+        Route::get('/', [AdminUmkmController::class, 'index'])->name('index');
+        Route::get('/create', [AdminUmkmController::class, 'create'])->name('create');
+        Route::post('/', [AdminUmkmController::class, 'store'])->name('store');
+        Route::get('/{umkm}', [AdminUmkmController::class, 'show'])->name('show');
+        Route::get('/{umkm}/edit', [AdminUmkmController::class, 'edit'])->name('edit');
+        Route::put('/{umkm}', [AdminUmkmController::class, 'update'])->name('update');
+        Route::delete('/{umkm}', [AdminUmkmController::class, 'destroy'])->name('destroy');
+        
+        // Custom actions for UMKM - HAPUS toggle-verification
+        Route::post('/{umkm}/toggle-active', [AdminUmkmController::class, 'toggleActive'])->name('toggle-active');
+    });
+});
+
 
 // ==========================================
 // INCLUDE OTHER ROUTE FILES

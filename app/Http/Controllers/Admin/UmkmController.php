@@ -18,11 +18,6 @@ class UmkmController extends Controller
             $query->where('category', $request->category);
         }
 
-        // Filter berdasarkan status verifikasi
-        if ($request->filled('verified')) {
-            $query->where('is_verified', $request->verified === 'true');
-        }
-
         // Filter berdasarkan status aktif
         if ($request->filled('active')) {
             $query->where('is_active', $request->active === 'true');
@@ -43,12 +38,11 @@ class UmkmController extends Controller
         return Inertia::render('admin/umkm/index', [
             'umkms' => $umkms,
             'categories' => Umkm::getCategories(),
-            'filters' => $request->only(['category', 'verified', 'active', 'search']),
+            'filters' => $request->only(['category', 'active', 'search']),
             'stats' => [
                 'total' => Umkm::count(),
                 'active' => Umkm::where('is_active', true)->count(),
-                'verified' => Umkm::where('is_verified', true)->count(),
-                'pending' => Umkm::where('is_verified', false)->count(),
+                'inactive' => Umkm::where('is_active', false)->count(),
             ]
         ]);
     }
@@ -56,7 +50,8 @@ class UmkmController extends Controller
     public function create()
     {
         return Inertia::render('admin/umkm/create', [
-            'categories' => Umkm::getCategories()
+            'categories' => Umkm::getCategories(),
+            'defaultOpeningHours' => Umkm::getDefaultOpeningHours()
         ]);
     }
 
@@ -75,13 +70,16 @@ class UmkmController extends Controller
             'image' => 'nullable|string|max:10',
             'instagram' => 'nullable|string|max:255',
             'facebook' => 'nullable|string|max:255',
-            'is_verified' => 'boolean',
+            'opening_hours' => 'nullable|array',
+            'opening_hours.*.is_open' => 'boolean',
+            'opening_hours.*.open_time' => 'nullable|string',
+            'opening_hours.*.close_time' => 'nullable|string',
             'is_active' => 'boolean'
         ]);
 
         $validated['rating'] = $validated['rating'] ?? 0;
         $validated['image'] = $validated['image'] ?? '🏪';
-        $validated['is_verified'] = $validated['is_verified'] ?? false;
+        $validated['opening_hours'] = $validated['opening_hours'] ?? Umkm::getDefaultOpeningHours();
         $validated['is_active'] = $validated['is_active'] ?? true;
 
         Umkm::create($validated);
@@ -101,7 +99,8 @@ class UmkmController extends Controller
     {
         return Inertia::render('admin/umkm/edit', [
             'umkm' => $umkm,
-            'categories' => Umkm::getCategories()
+            'categories' => Umkm::getCategories(),
+            'defaultOpeningHours' => Umkm::getDefaultOpeningHours()
         ]);
     }
 
@@ -120,7 +119,10 @@ class UmkmController extends Controller
             'image' => 'nullable|string|max:10',
             'instagram' => 'nullable|string|max:255',
             'facebook' => 'nullable|string|max:255',
-            'is_verified' => 'boolean',
+            'opening_hours' => 'nullable|array',
+            'opening_hours.*.is_open' => 'boolean',
+            'opening_hours.*.open_time' => 'nullable|string',
+            'opening_hours.*.close_time' => 'nullable|string',
             'is_active' => 'boolean'
         ]);
 
@@ -136,15 +138,6 @@ class UmkmController extends Controller
 
         return redirect()->route('admin.umkm.index')
                         ->with('success', 'UMKM berhasil dihapus!');
-    }
-
-    public function toggleVerification(Umkm $umkm)
-    {
-        $umkm->update([
-            'is_verified' => !$umkm->is_verified
-        ]);
-
-        return back()->with('success', 'Status verifikasi UMKM berhasil diubah!');
     }
 
     public function toggleActive(Umkm $umkm)
