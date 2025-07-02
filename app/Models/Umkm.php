@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Umkm extends Model
 {
@@ -19,15 +20,18 @@ class Umkm extends Model
         'contact',
         'rating',
         'image',
+        'display_photos',     
+        'menu_photo',    
         'instagram',
         'facebook',
-        'opening_hours',  // Tambah jam buka
-        'is_active'       // Hapus is_verified
+        'opening_hours',
+        'is_active'
     ];
 
     protected $casts = [
         'products' => 'array',
-        'opening_hours' => 'array',  // Tambah casting untuk jam buka
+        'display_photos' => 'array', 
+        'opening_hours' => 'array',
         'is_active' => 'boolean',
         'rating' => 'decimal:1'
     ];
@@ -47,52 +51,42 @@ class Umkm extends Model
         return $query;
     }
 
-    // Accessor untuk mendapatkan social media
-    public function getSocialMediaAttribute()
+    // Accessor untuk mendapatkan URL foto display
+    public function getDisplayPhotoUrlsAttribute()
     {
-        return [
-            'instagram' => $this->instagram,
-            'facebook' => $this->facebook,
-        ];
+        if (!$this->display_photos) {
+            return [];
+        }
+
+        return array_map(function($photo) {
+            return Storage::url('umkm/display/' . $photo);
+        }, $this->display_photos);
     }
 
-    // Method untuk mendapatkan jam buka hari ini
-    public function getTodayOpeningHoursAttribute()
+    // Accessor untuk mendapatkan URL foto menu
+    public function getMenuPhotoUrlAttribute()
     {
-        if (!$this->opening_hours) {
+        if (!$this->menu_photo) {
             return null;
         }
 
-        $today = strtolower(date('l')); // monday, tuesday, etc.
-        $dayMapping = [
-            'monday' => 'senin',
-            'tuesday' => 'selasa',
-            'wednesday' => 'rabu',
-            'thursday' => 'kamis',
-            'friday' => 'jumat',
-            'saturday' => 'sabtu',
-            'sunday' => 'minggu'
-        ];
-
-        $indonesianDay = $dayMapping[$today] ?? $today;
-        
-        return $this->opening_hours[$indonesianDay] ?? null;
+        return Storage::url('umkm/menu/' . $this->menu_photo);
     }
 
-    // Method untuk cek apakah sedang buka
-    public function getIsCurrentlyOpenAttribute()
+    // Method untuk menghapus foto lama
+    public function deleteOldPhotos()
     {
-        $todayHours = $this->today_opening_hours;
-        
-        if (!$todayHours || !$todayHours['is_open']) {
-            return false;
+        // Hapus foto display lama
+        if ($this->display_photos) {
+            foreach ($this->display_photos as $photo) {
+                Storage::delete('umkm/display/' . $photo);
+            }
         }
 
-        $currentTime = date('H:i');
-        $openTime = $todayHours['open_time'];
-        $closeTime = $todayHours['close_time'];
-
-        return $currentTime >= $openTime && $currentTime <= $closeTime;
+        // Hapus foto menu lama
+        if ($this->menu_photo) {
+            Storage::delete('umkm/menu/' . $this->menu_photo);
+        }
     }
 
     // Method untuk mendapatkan semua kategori
@@ -104,6 +98,20 @@ class Umkm extends Model
             'Warung & Kuliner',
             'Kerajinan',
             'Jasa'
+        ];
+    }
+
+    // Method untuk mendapatkan jam buka default
+    public static function getDefaultOpeningHours()
+    {
+        return [
+            'senin' => ['is_open' => true, 'open_time' => '08:00', 'close_time' => '17:00'],
+            'selasa' => ['is_open' => true, 'open_time' => '08:00', 'close_time' => '17:00'],
+            'rabu' => ['is_open' => true, 'open_time' => '08:00', 'close_time' => '17:00'],
+            'kamis' => ['is_open' => true, 'open_time' => '08:00', 'close_time' => '17:00'],
+            'jumat' => ['is_open' => true, 'open_time' => '08:00', 'close_time' => '17:00'],
+            'sabtu' => ['is_open' => true, 'open_time' => '08:00', 'close_time' => '17:00'],
+            'minggu' => ['is_open' => false, 'open_time' => '08:00', 'close_time' => '17:00']
         ];
     }
 
@@ -129,17 +137,13 @@ class Umkm extends Model
         return $stats;
     }
 
-    // Method untuk format jam buka
-    public static function getDefaultOpeningHours()
+    // Boot method untuk auto-delete files
+    protected static function boot()
     {
-        return [
-            'senin' => ['is_open' => true, 'open_time' => '08:00', 'close_time' => '17:00'],
-            'selasa' => ['is_open' => true, 'open_time' => '08:00', 'close_time' => '17:00'],
-            'rabu' => ['is_open' => true, 'open_time' => '08:00', 'close_time' => '17:00'],
-            'kamis' => ['is_open' => true, 'open_time' => '08:00', 'close_time' => '17:00'],
-            'jumat' => ['is_open' => true, 'open_time' => '08:00', 'close_time' => '17:00'],
-            'sabtu' => ['is_open' => true, 'open_time' => '08:00', 'close_time' => '17:00'],
-            'minggu' => ['is_open' => false, 'open_time' => '08:00', 'close_time' => '17:00']
-        ];
+        parent::boot();
+
+        static::deleting(function ($umkm) {
+            $umkm->deleteOldPhotos();
+        });
     }
 }

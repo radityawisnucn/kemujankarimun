@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\UmkmController;
 use App\Http\Controllers\Admin\UmkmController as AdminUmkmController;
+use Illuminate\Http\Request;
 
 // ==========================================
 // PUBLIC ROUTES
@@ -27,13 +28,13 @@ Route::get('/seaweed-type', [SeaweedTypeController::class, 'userIndex'])->name('
 Route::get('/user/processing-methods', [ProcessingMethodController::class, 'publicIndex'])->name('processing-methods.public.index');
 
 // ==========================================
-// UMKM ROUTES (PUBLIC) - UPDATED
+// UMKM ROUTES (PUBLIC)
 // ==========================================
 
 // Route utama UMKM - halaman landing
 Route::get('/umkm', [UmkmController::class, 'index'])->name('umkm.index');
 
-// Route untuk daftar UMKM dengan filter (akan menampilkan halaman umkm-list)
+// Route untuk daftar UMKM dengan filter
 Route::get('/umkm/list', function(Request $request) {
     return app(UmkmController::class)->getFilteredUmkms($request);
 })->name('umkm.list');
@@ -108,8 +109,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::delete('/{processingMethod}', [ProcessingMethodController::class, 'destroy'])->name('destroy');
     });
 
-    // Tambahkan di bagian ADMIN PROTECTED ROUTES, setelah processing-methods
-    // UMKM Management
+    // UMKM Management - HANYA SATU DEFINISI
     Route::prefix('umkm')->name('umkm.')->group(function () {
         Route::get('/', [AdminUmkmController::class, 'index'])->name('index');
         Route::get('/create', [AdminUmkmController::class, 'create'])->name('create');
@@ -119,28 +119,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::put('/{umkm}', [AdminUmkmController::class, 'update'])->name('update');
         Route::delete('/{umkm}', [AdminUmkmController::class, 'destroy'])->name('destroy');
         
-        // Custom actions for UMKM
-        Route::post('/{umkm}/toggle-verification', [AdminUmkmController::class, 'toggleVerification'])->name('toggle-verification');
+        // Custom actions for UMKM - HANYA toggle-active
         Route::post('/{umkm}/toggle-active', [AdminUmkmController::class, 'toggleActive'])->name('toggle-active');
     });
 });
-
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    // UMKM Management
-    Route::prefix('umkm')->name('umkm.')->group(function () {
-        Route::get('/', [AdminUmkmController::class, 'index'])->name('index');
-        Route::get('/create', [AdminUmkmController::class, 'create'])->name('create');
-        Route::post('/', [AdminUmkmController::class, 'store'])->name('store');
-        Route::get('/{umkm}', [AdminUmkmController::class, 'show'])->name('show');
-        Route::get('/{umkm}/edit', [AdminUmkmController::class, 'edit'])->name('edit');
-        Route::put('/{umkm}', [AdminUmkmController::class, 'update'])->name('update');
-        Route::delete('/{umkm}', [AdminUmkmController::class, 'destroy'])->name('destroy');
-        
-        // Custom actions for UMKM - HAPUS toggle-verification
-        Route::post('/{umkm}/toggle-active', [AdminUmkmController::class, 'toggleActive'])->name('toggle-active');
-    });
-});
-
 
 // ==========================================
 // INCLUDE OTHER ROUTE FILES

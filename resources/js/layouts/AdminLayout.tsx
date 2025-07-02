@@ -1,19 +1,6 @@
 import React, { useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
-import { 
-    Menu, 
-    X, 
-    Home, 
-    Users, 
-    ShoppingBag, 
-    FileText, 
-    Settings, 
-    LogOut,
-    Store,
-    Fish,
-    Waves,
-    Activity
-} from 'lucide-react';
+import { Menu, X, Home, Store, LogOut } from 'lucide-react';
 
 interface Props {
     children: React.ReactNode;
@@ -38,52 +25,10 @@ export default function AdminLayout({ children }: Props) {
 
     const navigation = [
         {
-            name: 'Dashboard',
-            href: route('admin.dashboard'),
-            icon: Home,
-            current: route().current('admin.dashboard')
-        },
-        {
             name: 'UMKM',
-            href: route('admin.umkm.index'),
+            href: '/admin/umkm',
             icon: Store,
-            current: route().current('admin.umkm.*')
-        },
-        {
-            name: 'Produk',
-            href: route('admin.products.index'),
-            icon: ShoppingBag,
-            current: route().current('admin.products.*')
-        },
-        {
-            name: 'Rumput Laut',
-            href: route('admin.seaweed.index'),
-            icon: Waves,
-            current: route().current('admin.seaweed.*')
-        },
-        {
-            name: 'Pengolahan',
-            href: route('admin.processing.index'),
-            icon: Fish,
-            current: route().current('admin.processing.*')
-        },
-        {
-            name: 'Aktivitas',
-            href: route('admin.activities.index'),
-            icon: Activity,
-            current: route().current('admin.activities.*')
-        },
-        {
-            name: 'Pengguna',
-            href: route('admin.users.index'),
-            icon: Users,
-            current: route().current('admin.users.*')
-        },
-        {
-            name: 'Pengaturan',
-            href: route('admin.settings.index'),
-            icon: Settings,
-            current: route().current('admin.settings.*')
+            current: window.location.pathname.includes('/admin/umkm')
         }
     ];
 
@@ -106,12 +51,12 @@ export default function AdminLayout({ children }: Props) {
                 
                 {/* Sidebar header */}
                 <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
-                    <Link href={route('admin.dashboard')} className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-2">
                         <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                             <span className="text-white font-bold text-sm">K</span>
                         </div>
                         <span className="text-lg font-semibold text-gray-900">Kemujan Admin</span>
-                    </Link>
+                    </div>
                     <button
                         onClick={() => setSidebarOpen(false)}
                         className="lg:hidden text-gray-500 hover:text-gray-700"
@@ -150,27 +95,28 @@ export default function AdminLayout({ children }: Props) {
                     <div className="flex items-center space-x-3 mb-3">
                         <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
                             <span className="text-xs font-medium text-gray-700">
-                                {auth.user.name.charAt(0).toUpperCase()}
+                                {auth.user ? auth.user.name.charAt(0).toUpperCase() : 'A'}
                             </span>
                         </div>
                         <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-gray-900 truncate">
-                                {auth.user.name}
+                                {auth.user ? auth.user.name : 'Admin'}
                             </p>
                             <p className="text-xs text-gray-500 truncate">
-                                {auth.user.email}
+                                {auth.user ? auth.user.email : 'admin@example.com'}
                             </p>
                         </div>
                     </div>
-                    <Link
-                        href={route('logout')}
-                        method="post"
-                        as="button"
-                        className="w-full flex items-center justify-center px-3 py-2 text-sm text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-                    >
-                        <LogOut className="w-4 h-4 mr-2" />
-                        Keluar
-                    </Link>
+                    <form method="POST" action="/admin/logout">
+                        <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''} />
+                        <button
+                            type="submit"
+                            className="w-full flex items-center justify-center px-3 py-2 text-sm text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                        >
+                            <LogOut className="w-4 h-4 mr-2" />
+                            Keluar
+                        </button>
+                    </form>
                 </div>
             </div>
 
@@ -190,7 +136,7 @@ export default function AdminLayout({ children }: Props) {
                         
                         <div className="flex items-center space-x-4">
                             <span className="text-sm text-gray-500">
-                                Selamat datang, {auth.user.name}
+                                Selamat datang, {auth.user ? auth.user.name : 'Admin'}
                             </span>
                         </div>
                     </div>
