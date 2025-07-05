@@ -147,35 +147,46 @@ class UmkmController extends Controller
             'products.*' => 'required|string|max:255',
             'contact' => 'required|string|max:20',
             'rating' => 'nullable|numeric|min:0|max:5',
-            'image' => 'nullable|string|max:10',
+            'image' => 'required|string|max:10',
             'display_photos' => 'nullable|array|max:3',
             'display_photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             'menu_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'remove_display_photos' => 'nullable|array',
+            'remove_display_photos.*' => 'string',
             'remove_menu_photo' => 'nullable|boolean',
             'instagram' => 'nullable|string|max:255',
             'facebook' => 'nullable|string|max:255',
-            'opening_hours' => 'nullable|array',
-            'opening_hours.*.is_open' => 'boolean',
-            'opening_hours.*.open_time' => 'nullable|string',
-            'opening_hours.*.close_time' => 'nullable|string',
-            'is_active' => 'boolean'
+            'opening_hours' => 'nullable|string', // JSON string dari frontend
+            'is_active' => 'nullable|boolean'
         ]);
 
-        // Handle display photos
+        // Parse opening hours JSON jika ada
+        if (isset($validated['opening_hours'])) {
+            $validated['opening_hours'] = json_decode($validated['opening_hours'], true);
+        }
+
+        // Set default values
+        $validated['rating'] = $validated['rating'] ?? 0;
+        $validated['opening_hours'] = $validated['opening_hours'] ?? Umkm::getDefaultOpeningHours();
+        $validated['is_active'] = isset($validated['is_active']) ? (bool)$validated['is_active'] : true;
+
+        // Handle display photos removal
         $currentDisplayPhotos = $umkm->display_photos ?? [];
         
-        // Remove selected photos
-        if ($request->filled('remove_display_photos')) {
-            foreach ($request->remove_display_photos as $photoToRemove) {
-                Storage::delete('umkm/display/' . $photoToRemove);
+        if (isset($validated['remove_display_photos'])) {
+            foreach ($validated['remove_display_photos'] as $photoToRemove) {
+                // Delete file from storage
+                if (Storage::disk('public')->exists('umkm/display/' . $photoToRemove)) {
+                    Storage::disk('public')->delete('umkm/display/' . $photoToRemove);
+                }
+                // Remove from current photos array
                 $currentDisplayPhotos = array_filter($currentDisplayPhotos, function($photo) use ($photoToRemove) {
                     return $photo !== $photoToRemove;
                 });
             }
         }
 
-        // Add new photos
+        // Handle new display photos upload
         if ($request->hasFile('display_photos')) {
             foreach ($request->file('display_photos') as $photo) {
                 if (count($currentDisplayPhotos) < 3) {
@@ -188,20 +199,21 @@ class UmkmController extends Controller
         
         $validated['display_photos'] = array_values($currentDisplayPhotos);
 
-        // Handle menu photo
-        if ($request->filled('remove_menu_photo') && $request->remove_menu_photo) {
-            if ($umkm->menu_photo) {
-                Storage::delete('umkm/menu/' . $umkm->menu_photo);
+        // Handle menu photo removal
+        if (isset($validated['remove_menu_photo']) && $validated['remove_menu_photo']) {
+            if ($umkm->menu_photo && Storage::disk('public')->exists('umkm/menu/' . $umkm->menu_photo)) {
+                Storage::disk('public')->delete('umkm/menu/' . $umkm->menu_photo);
             }
             $validated['menu_photo'] = null;
         } else {
             $validated['menu_photo'] = $umkm->menu_photo;
         }
 
+        // Handle new menu photo upload
         if ($request->hasFile('menu_photo')) {
-            // Delete old menu photo
-            if ($umkm->menu_photo) {
-                Storage::delete('umkm/menu/' . $umkm->menu_photo);
+            // Delete old menu photo if exists
+            if ($umkm->menu_photo && Storage::disk('public')->exists('umkm/menu/' . $umkm->menu_photo)) {
+                Storage::disk('public')->delete('umkm/menu/' . $umkm->menu_photo);
             }
             
             $menuPhoto = $request->file('menu_photo');
@@ -210,6 +222,18 @@ class UmkmController extends Controller
             $validated['menu_photo'] = $filename;
         }
 
+        // Custom validation: Ensure at least one display photo or icon
+        if (empty($validated['display_photos']) && empty($validated['image'])) {
+            return back()->withErrors([
+                'display_photos' => 'Wajib memiliki minimal 1 foto display atau pilih icon untuk UMKM.'
+            ])->withInput();
+        }
+
+        // Remove fields that shouldn't be saved to database
+        unset($validated['remove_display_photos']);
+        unset($validated['remove_menu_photo']);
+
+        // Update the UMKM record
         $umkm->update($validated);
 
         return redirect()->route('admin.umkm.index')
@@ -218,7 +242,19 @@ class UmkmController extends Controller
 
     public function destroy(Umkm $umkm)
     {
-        // Files will be deleted automatically via model boot method
+        // Delete associated files
+        if ($umkm->display_photos) {
+            foreach ($umkm->display_photos as $photo) {
+                if (Storage::disk('public')->exists('umkm/display/' . $photo)) {
+                    Storage::disk('public')->delete('umkm/display/' . $photo);
+                }
+            }
+        }
+
+        if ($umkm->menu_photo && Storage::disk('public')->exists('umkm/menu/' . $umkm->menu_photo)) {
+            Storage::disk('public')->delete('umkm/menu/' . $umkm->menu_photo);
+        }
+
         $umkm->delete();
 
         return redirect()->route('admin.umkm.index')

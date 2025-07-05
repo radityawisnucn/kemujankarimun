@@ -73,19 +73,25 @@ class Umkm extends Model
         return Storage::url('umkm/menu/' . $this->menu_photo);
     }
 
-    // Method untuk menghapus foto lama
+    // Method untuk menghapus foto lama - IMPROVED with better error handling
     public function deleteOldPhotos()
     {
-        // Hapus foto display lama
-        if ($this->display_photos) {
-            foreach ($this->display_photos as $photo) {
-                Storage::delete('umkm/display/' . $photo);
+        try {
+            // Hapus foto display lama
+            if ($this->display_photos && is_array($this->display_photos)) {
+                foreach ($this->display_photos as $photo) {
+                    if ($photo && Storage::disk('public')->exists('umkm/display/' . $photo)) {
+                        Storage::disk('public')->delete('umkm/display/' . $photo);
+                    }
+                }
             }
-        }
 
-        // Hapus foto menu lama
-        if ($this->menu_photo) {
-            Storage::delete('umkm/menu/' . $this->menu_photo);
+            // Hapus foto menu lama
+            if ($this->menu_photo && Storage::disk('public')->exists('umkm/menu/' . $this->menu_photo)) {
+                Storage::disk('public')->delete('umkm/menu/' . $this->menu_photo);
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error deleting UMKM photos: ' . $e->getMessage());
         }
     }
 
@@ -135,6 +141,83 @@ class Umkm extends Model
         ]);
         
         return $stats;
+    }
+
+    // ADDED: Method untuk mengecek apakah UMKM buka hari ini
+    public function isOpenToday()
+    {
+        if (!$this->opening_hours) return false;
+        
+        $today = strtolower(now()->format('l')); // monday, tuesday, etc
+        $dayMapping = [
+            'monday' => 'senin',
+            'tuesday' => 'selasa', 
+            'wednesday' => 'rabu',
+            'thursday' => 'kamis',
+            'friday' => 'jumat',
+            'saturday' => 'sabtu',
+            'sunday' => 'minggu'
+        ];
+        
+        $indonesianDay = $dayMapping[$today] ?? null;
+        if (!$indonesianDay || !isset($this->opening_hours[$indonesianDay])) {
+            return false;
+        }
+        
+        return $this->opening_hours[$indonesianDay]['is_open'] ?? false;
+    }
+
+    // ADDED: Method untuk mengecek apakah UMKM buka sekarang
+    public function isOpenNow()
+    {
+        if (!$this->isOpenToday()) return false;
+        
+        $today = strtolower(now()->format('l'));
+        $dayMapping = [
+            'monday' => 'senin',
+            'tuesday' => 'selasa', 
+            'wednesday' => 'rabu',
+            'thursday' => 'kamis',
+            'friday' => 'jumat',
+            'saturday' => 'sabtu',
+            'sunday' => 'minggu'
+        ];
+        
+        $indonesianDay = $dayMapping[$today];
+        $todayHours = $this->opening_hours[$indonesianDay];
+        
+        if (!$todayHours['is_open']) return false;
+        
+        $now = now();
+        $currentTime = $now->hour * 60 + $now->minute;
+        
+        [$openHour, $openMin] = explode(':', $todayHours['open_time']);
+        [$closeHour, $closeMin] = explode(':', $todayHours['close_time']);
+        
+        $openTime = (int)$openHour * 60 + (int)$openMin;
+        $closeTime = (int)$closeHour * 60 + (int)$closeMin;
+        
+        return $currentTime >= $openTime && $currentTime <= $closeTime;
+    }
+
+    // ADDED: Method untuk mendapatkan jam buka hari ini
+    public function getTodayOpeningHours()
+    {
+        if (!$this->opening_hours) return null;
+        
+        $today = strtolower(now()->format('l'));
+        $dayMapping = [
+            'monday' => 'senin',
+            'tuesday' => 'selasa', 
+            'wednesday' => 'rabu',
+            'thursday' => 'kamis',
+            'friday' => 'jumat',
+            'saturday' => 'sabtu',
+            'sunday' => 'minggu'
+        ];
+        
+        $indonesianDay = $dayMapping[$today] ?? null;
+        return $indonesianDay ? ($this->opening_hours[$indonesianDay] ?? null) : null;
     }
 
     // Boot method untuk auto-delete files

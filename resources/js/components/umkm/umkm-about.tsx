@@ -90,16 +90,14 @@ export default function UmkmAbout() {
                         </div>
                     </div>
 
-                    {/* Right Content - Documents & Map */}
+                    {/* Right Content */}
                     <div className="space-y-6">
-                        {/* Download Section */}
-                        <div className="bg-gradient-to-br from-blue-50 to-green-50 rounded-2xl p-8">
-                            <h3 className="text-xl font-bold text-gray-900 mb-6 text-center">
-                                Dokumen & Peta UMKM
-                            </h3>
+                        {/* Documents & Maps Section */}
+                        <div className="bg-gray-50 rounded-2xl p-6">
+                            <h3 className="text-xl font-bold text-gray-900 mb-6">Dokumen & Peta UMKM</h3>
                             
                             <div className="space-y-4">
-                                {/* PDF Dokumen UMKM */}
+                                {/* Profil UMKM Kemujan */}
                                 <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
                                     <div className="flex items-center space-x-4">
                                         <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
@@ -143,44 +141,21 @@ export default function UmkmAbout() {
                             </div>
                         </div>
 
-                        {/* Interactive Map Preview */}
+                        {/* Google Maps Container - UPDATED */}
                         <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-                            <div className="bg-gradient-to-r from-blue-600 to-green-600 p-4">
-                                <h4 className="text-white font-semibold flex items-center">
-                                    <MapPin className="w-5 h-5 mr-2" />
-                                    Lokasi Desa Kemujan
-                                </h4>
-                            </div>
-                            
-                            {/* Map Container */}
-                            <div className="relative h-64 bg-gradient-to-br from-blue-100 via-green-100 to-blue-200">
-                                {/* Placeholder Map - Bisa diganti dengan Google Maps embed atau Leaflet */}
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                    <div className="text-center">
-                                        <MapPin className="w-12 h-12 text-blue-600 mx-auto mb-2" />
-                                        <p className="text-gray-700 font-medium">Desa Kemujan</p>
-                                        <p className="text-sm text-gray-600">Karimunjawa, Jepara</p>
-                                        <p className="text-xs text-gray-500 mt-1">-5.8167°S, 110.4167°E</p>
-                                    </div>
-                                </div>
-                                
-                                {/* Decorative elements */}
-                                <div className="absolute top-4 right-4 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                                <div className="absolute bottom-6 left-6 w-2 h-2 bg-blue-500 rounded-full"></div>
-                                <div className="absolute top-1/2 left-4 w-2 h-2 bg-green-500 rounded-full"></div>
-                                
-                                {/* Overlay untuk menunjukkan ini adalah preview */}
-                                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/50 to-transparent p-4">
-                                    <a 
-                                        href="https://maps.google.com/?q=Desa+Kemujan+Karimunjawa" 
-                                        target="_blank" 
-                                        rel="noopener noreferrer"
-                                        className="flex items-center space-x-2 text-white text-sm hover:text-blue-200 transition-colors"
-                                    >
-                                        <span>Lihat di Google Maps</span>
-                                        <ExternalLink className="w-4 h-4" />
-                                    </a>
-                                </div>
+                            {/* Google Maps Embed */}
+                            <div className="relative h-80">
+                                <iframe
+                                    src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d34450.44805372992!2d110.46370367371266!3d-5.798838515507821!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e710d247285d9d1%3A0xf1344cb6f1b9d391!2sKemujan%2C%20Karimunjawa%2C%20Jepara%20Regency%2C%20Central%20Java!5e0!3m2!1sen!2sid!4v1751488321918!5m2!1sen!2sid"
+                                    width="100%"
+                                    height="320"
+                                    style={{ border: 0 }}
+                                    allowFullScreen
+                                    loading="lazy"
+                                    referrerPolicy="no-referrer-when-downgrade"
+                                    className="w-full h-full"
+                                    title="Lokasi Desa Kemujan, Karimunjawa"
+                                ></iframe>
                             </div>
                         </div>
                     </div>

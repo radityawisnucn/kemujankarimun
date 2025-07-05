@@ -40,14 +40,8 @@ export default function UmkmFooter() {
                         
                         {/* Social Media */}
                         <div className="flex space-x-4">
-                            <a href="#" className="w-10 h-10 bg-blue-600 hover:bg-blue-700 rounded-lg flex items-center justify-center transition-colors">
-                                <Facebook className="w-5 h-5" />
-                            </a>
                             <a href="#" className="w-10 h-10 bg-pink-600 hover:bg-pink-700 rounded-lg flex items-center justify-center transition-colors">
                                 <Instagram className="w-5 h-5" />
-                            </a>
-                            <a href="#" className="w-10 h-10 bg-blue-400 hover:bg-blue-500 rounded-lg flex items-center justify-center transition-colors">
-                                <Twitter className="w-5 h-5" />
                             </a>
                             <a href="#" className="w-10 h-10 bg-red-600 hover:bg-red-700 rounded-lg flex items-center justify-center transition-colors">
                                 <Youtube className="w-5 h-5" />
@@ -60,29 +54,30 @@ export default function UmkmFooter() {
                         <h4 className="text-lg font-semibold mb-4">Navigasi</h4>
                         <ul className="space-y-3">
                             <li>
-                                <a href="#hero" className="text-gray-300 hover:text-white transition-colors text-sm flex items-center">
+                                <a href="http://127.0.0.1:8000/umkm#hero" className="text-gray-300 hover:text-white transition-colors text-sm">
                                     <span>Beranda</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="#about" className="text-gray-300 hover:text-white transition-colors text-sm">
+                                <a href="http://127.0.0.1:8000/umkm#about" className="text-gray-300 hover:text-white transition-colors text-sm">
                                     Tentang Kemujan
                                 </a>
                             </li>
                             <li>
-                                <a href="#programs" className="text-gray-300 hover:text-white transition-colors text-sm">
+                                <Link 
+                                    href="/umkm/list-umkm"
+                                    className="text-gray-300 hover:text-white transition-colors text-sm"
+                                >
                                     UMKM Unggulan
-                                </a>
+                                </Link>
                             </li>
                             <li>
-                                <a href="#gallery" className="text-gray-300 hover:text-white transition-colors text-sm">
-                                    Galeri Aktivitas
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#contact" className="text-gray-300 hover:text-white transition-colors text-sm">
-                                    Tim Kami
-                                </a>
+                                <Link 
+                                    href="/umkm/program-kerja"
+                                    className="text-gray-300 hover:text-white transition-colors text-sm"
+                                >
+                                    Program Kerja
+                                </Link>
                             </li>
                         </ul>
                     </div>
@@ -167,12 +162,12 @@ export default function UmkmFooter() {
                             <div className="flex items-center space-x-3">
                                 <Globe className="w-5 h-5 text-blue-400 flex-shrink-0" />
                                 <a 
-                                    href="https://karimunjawa.go.id" 
+                                    href="https://olahlautkemujan.com" 
                                     target="_blank" 
                                     rel="noopener noreferrer"
                                     className="text-gray-300 hover:text-white text-sm transition-colors flex items-center"
                                 >
-                                    karimunjawa.go.id
+                                    olahlautkemujan.com
                                     <ExternalLink className="w-3 h-3 ml-1" />
                                 </a>
                             </div>

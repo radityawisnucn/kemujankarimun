@@ -13,7 +13,8 @@ import {
     Award,
     ShoppingBag,
     TrendingUp,
-    Filter
+    Filter,
+    Clock
 } from 'lucide-react';
 
 // Interface untuk UMKM data
@@ -28,8 +29,17 @@ interface Umkm {
     contact: string;
     rating: number;
     image: string;
+    display_photos?: string[];
+    menu_photo?: string;
     instagram?: string;
     facebook?: string;
+    opening_hours?: {
+        [key: string]: {
+            is_open: boolean;
+            open_time: string;
+            close_time: string;
+        };
+    };
     is_verified: boolean;
     is_active: boolean;
     created_at: string;
@@ -58,6 +68,28 @@ interface Props {
 export default function UmkmPrograms({ featured_umkms, categories, stats }: Props) {
     const [selectedCategory, setSelectedCategory] = useState<string>('Semua');
     
+    // Helper function untuk mendapatkan display image
+    const getDisplayImage = (umkm: Umkm) => {
+        if (umkm.display_photos && umkm.display_photos.length > 0) {
+            return `/storage/umkm/display/${umkm.display_photos[0]}`;
+        }
+        return null;
+    };
+
+    // Helper function untuk mendapatkan jam buka hari ini
+    const getTodayOpeningHours = (umkm: Umkm) => {
+        if (!umkm.opening_hours) return '08:00-17:00';
+        
+        const days = ['minggu', 'senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu'];
+        const today = days[new Date().getDay()];
+        const todayHours = umkm.opening_hours[today];
+        
+        if (todayHours && todayHours.is_open) {
+            return `${todayHours.open_time}-${todayHours.close_time}`;
+        }
+        return 'Tutup';
+    };
+    
     // Filter UMKM berdasarkan kategori yang dipilih
     const filteredUmkms = useMemo(() => {
         if (!featured_umkms) return [];
@@ -75,6 +107,25 @@ export default function UmkmPrograms({ featured_umkms, categories, stats }: Prop
             />
         ));
     };
+
+    // Prepare categories list 
+    const allCategories = useMemo(() => {
+        if (!categories) return [{ name: 'Semua', count: featured_umkms?.length || 0 }];
+        
+        // Cek apakah 'Semua' sudah ada di categories
+        const hasSemuaCategory = categories.some(cat => cat.name === 'Semua');
+        
+        if (hasSemuaCategory) {
+            // Jika sudah ada, langsung gunakan categories
+            return categories;
+        } else {
+            // Jika belum ada, tambahkan 'Semua' di awal
+            return [
+                { name: 'Semua', count: featured_umkms?.length || 0 },
+                ...categories
+            ];
+        }
+    }, [categories, featured_umkms]);
 
     return (
         <section id="programs" className="py-16 bg-gray-50">
@@ -129,10 +180,10 @@ export default function UmkmPrograms({ featured_umkms, categories, stats }: Prop
                 )}
 
                 {/* Category Filter */}
-                {categories && categories.length > 0 && (
+                {allCategories && allCategories.length > 1 && (
                     <div className="mb-8">
                         <div className="flex flex-wrap justify-center gap-4">
-                            {categories.map((category) => (
+                            {allCategories.map((category) => (
                                 <button
                                     key={category.name}
                                     onClick={() => setSelectedCategory(category.name)}
@@ -169,17 +220,73 @@ export default function UmkmPrograms({ featured_umkms, categories, stats }: Prop
 
                         {filteredUmkms.length > 0 ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-                                {filteredUmkms.map((umkm) => (
-                                    <div key={umkm.id} className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group flex flex-col h-full">
-                                        {/* Card Header */}
-                                        <div className="p-6 flex-grow flex flex-col">
-                                            <div className="flex items-start justify-between mb-4">
-                                                <div className="flex items-center space-x-3 flex-1 min-w-0">
-                                                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                                        <span className="text-xl">{umkm.image}</span>
+                                {filteredUmkms.map((umkm) => {
+                                    const displayImage = getDisplayImage(umkm);
+                                    const todayHours = getTodayOpeningHours(umkm);
+                                    
+                                    return (
+                                        <div key={umkm.id} className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group flex flex-col h-full umkm-card-hover">
+                                            {/* Image Section - Admin Style */}
+                                            <div className="relative h-48 bg-gradient-to-br from-blue-50 to-blue-100">
+                                                {displayImage ? (
+                                                    <>
+                                                        <img 
+                                                            src={displayImage} 
+                                                            alt={umkm.name}
+                                                            className="w-full h-full object-cover"
+                                                            onError={(e) => {
+                                                                const target = e.currentTarget;
+                                                                target.style.display = 'none';
+                                                                const fallback = target.parentElement?.querySelector('.emoji-fallback');
+                                                                if (fallback) {
+                                                                    (fallback as HTMLElement).classList.remove('hidden');
+                                                                }
+                                                            }}
+                                                        />
+                                                        <div className="emoji-fallback hidden w-full h-full flex items-center justify-center absolute inset-0">
+                                                            <span className="text-6xl">{umkm.image}</span>
+                                                        </div>
+                                                    </>
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center">
+                                                        <span className="text-6xl">{umkm.image}</span>
                                                     </div>
+                                                )}
+                                                
+                                                {/* Status Badge */}
+                                                <div className="absolute top-3 left-3">
+                                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                        Aktif
+                                                    </span>
+                                                </div>
+                                                
+                                                {/* Operating Hours */}
+                                                <div className="absolute top-3 right-3">
+                                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-white bg-opacity-90 text-gray-800">
+                                                        <Clock className="w-3 h-3 mr-1" />
+                                                        {todayHours}
+                                                    </span>
+                                                </div>
+
+                                                {/* Verified Badge */}
+                                                {umkm.is_verified && (
+                                                    <div className="absolute bottom-3 left-3">
+                                                        <div className="flex items-center space-x-1 text-green-600 bg-white bg-opacity-90 px-2 py-1 rounded-full">
+                                                            <CheckCircle className="w-4 h-4" />
+                                                            <span className="text-xs font-medium">Verified</span>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {/* Card Content */}
+                                            <div className="p-6 flex-grow flex flex-col">
+                                                {/* Header */}
+                                                <div className="flex items-start justify-between mb-4">
                                                     <div className="min-w-0 flex-1">
-                                                        <h3 className="font-bold text-gray-900 text-lg truncate">{umkm.name}</h3>
+                                                        <h3 className="font-bold text-gray-900 text-lg truncate group-hover:text-blue-600 transition-colors">
+                                                            {umkm.name}
+                                                        </h3>
                                                         <p className="text-sm text-gray-600 truncate">{umkm.owner}</p>
                                                         <div className="flex items-center space-x-1 mt-1">
                                                             {renderStars(umkm.rating)}
@@ -187,98 +294,99 @@ export default function UmkmPrograms({ featured_umkms, categories, stats }: Prop
                                                         </div>
                                                     </div>
                                                 </div>
-                                                {umkm.is_verified && (
-                                                    <div className="flex items-center space-x-1 text-green-600 flex-shrink-0 ml-2">
-                                                        <CheckCircle className="w-4 h-4" />
-                                                        <span className="text-xs font-medium">Verified</span>
+
+                                                {/* Category */}
+                                                <div className="mb-4">
+                                                    <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-medium">
+                                                        {umkm.category}
+                                                    </span>
+                                                </div>
+
+                                                {/* Description - Fixed height dengan line clamp */}
+                                                <div className="mb-4 flex-shrink-0">
+                                                    <p className="text-gray-600 text-sm leading-relaxed h-12 overflow-hidden">
+                                                        <span className="line-clamp-3">{umkm.description}</span>
+                                                    </p>
+                                                </div>
+
+                                                {/* Address - Fixed height */}
+                                                <div className="flex items-start space-x-2 mb-4 flex-shrink-0">
+                                                    <MapPin className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                                                    <span className="text-sm text-gray-600 line-clamp-2 leading-relaxed">{umkm.address}</span>
+                                                </div>
+
+                                                {/* Products - Fixed height */}
+                                                <div className="mb-4 flex-shrink-0">
+                                                    <h4 className="text-sm font-medium text-gray-900 mb-2">Produk:</h4>
+                                                    <div className="flex flex-wrap gap-1 min-h-[2rem]">
+                                                        {umkm.products.slice(0, 3).map((product, index) => (
+                                                            <span
+                                                                key={index}
+                                                                className="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded truncate max-w-[120px]"
+                                                                title={product}
+                                                            >
+                                                                {product}
+                                                            </span>
+                                                        ))}
+                                                        {umkm.products.length > 3 && (
+                                                            <span className="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded">
+                                                                +{umkm.products.length - 3} lainnya
+                                                            </span>
+                                                        )}
                                                     </div>
-                                                )}
-                                            </div>
+                                                </div>
 
-                                            {/* Category */}
-                                            <div className="mb-4">
-                                                <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-medium">
-                                                    {umkm.category}
-                                                </span>
-                                            </div>
+                                                {/* Contact and Social Media - Push to bottom */}
+                                                <div className="flex items-center justify-between mt-auto pt-2">
+                                                    <div className="flex items-center space-x-2 flex-1 min-w-0">
+                                                        <Phone className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                                                        <span className="text-sm text-gray-600 truncate">{umkm.contact}</span>
+                                                    </div>
+                                                    <div className="flex items-center space-x-2 flex-shrink-0 ml-2">
+                                                        {umkm.instagram && (
+                                                            <a
+                                                                href={umkm.instagram}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="text-pink-500 hover:text-pink-600 transition-colors"
+                                                            >
+                                                                <Instagram className="w-4 h-4" />
+                                                            </a>
+                                                        )}
+                                                        {umkm.facebook && (
+                                                            <a
+                                                                href={umkm.facebook}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="text-blue-600 hover:text-blue-700 transition-colors"
+                                                            >
+                                                                <Facebook className="w-4 h-4" />
+                                                            </a>
+                                                        )}
+                                                    </div>
+                                                </div>
 
-                                            {/* Description - Fixed height dengan line clamp */}
-                                            <div className="mb-4 flex-shrink-0">
-                                                <p className="text-gray-600 text-sm leading-relaxed h-12 overflow-hidden">
-                                                    <span className="line-clamp-3">{umkm.description}</span>
-                                                </p>
-                                            </div>
-
-                                            {/* Address - Fixed height */}
-                                            <div className="flex items-start space-x-2 mb-4 flex-shrink-0">
-                                                <MapPin className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                                                <span className="text-sm text-gray-600 line-clamp-2 leading-relaxed">{umkm.address}</span>
-                                            </div>
-
-                                            {/* Products - Fixed height */}
-                                            <div className="mb-4 flex-shrink-0">
-                                                <h4 className="text-sm font-medium text-gray-900 mb-2">Produk:</h4>
-                                                <div className="flex flex-wrap gap-1 min-h-[2rem]">
-                                                    {umkm.products.slice(0, 3).map((product, index) => (
-                                                        <span
-                                                            key={index}
-                                                            className="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded truncate max-w-[120px]"
-                                                            title={product}
-                                                        >
-                                                            {product}
-                                                        </span>
-                                                    ))}
-                                                    {umkm.products.length > 3 && (
-                                                        <span className="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded">
-                                                            +{umkm.products.length - 3} lainnya
-                                                        </span>
-                                                    )}
+                                                {/* Created Date */}
+                                                <div className="mt-3 pt-3 border-t border-gray-50">
+                                                    <p className="text-xs text-gray-400">
+                                                        Bergabung: {new Date(umkm.created_at).toLocaleDateString('id-ID')}
+                                                    </p>
                                                 </div>
                                             </div>
 
-                                            {/* Contact and Social Media - Push to bottom */}
-                                            <div className="flex items-center justify-between mt-auto pt-2">
-                                                <div className="flex items-center space-x-2 flex-1 min-w-0">
-                                                    <Phone className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                                                    <span className="text-sm text-gray-600 truncate">{umkm.contact}</span>
-                                                </div>
-                                                <div className="flex items-center space-x-2 flex-shrink-0 ml-2">
-                                                    {umkm.instagram && (
-                                                        <a
-                                                            href={umkm.instagram}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="text-pink-500 hover:text-pink-600 transition-colors"
-                                                        >
-                                                            <Instagram className="w-4 h-4" />
-                                                        </a>
-                                                    )}
-                                                    {umkm.facebook && (
-                                                        <a
-                                                            href={umkm.facebook}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="text-blue-600 hover:text-blue-700 transition-colors"
-                                                        >
-                                                            <Facebook className="w-4 h-4" />
-                                                        </a>
-                                                    )}
-                                                </div>
+                                            {/* Card Footer - Konsisten di bawah */}
+                                            <div className="bg-gray-50 px-6 py-4 mt-auto flex-shrink-0">
+                                                <Link
+                                                    href={route('umkm.show', umkm.id)}
+                                                    className="inline-flex items-center justify-center space-x-2 text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors w-full group"
+                                                >
+                                                    <span>Lihat Detail</span>
+                                                    <ExternalLink className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                                </Link>
                                             </div>
                                         </div>
-
-                                        {/* Card Footer - Konsisten di bawah */}
-                                        <div className="bg-gray-50 px-6 py-4 mt-auto flex-shrink-0">
-                                            <Link
-                                                href={route('umkm.show', umkm.id)}
-                                                className="inline-flex items-center justify-center space-x-2 text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors w-full"
-                                            >
-                                                <span>Lihat Detail</span>
-                                                <ExternalLink className="w-4 h-4" />
-                                            </Link>
-                                        </div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         ) : (
                             /* No results for current filter */
@@ -296,7 +404,7 @@ export default function UmkmPrograms({ featured_umkms, categories, stats }: Prop
                                     onClick={() => setSelectedCategory('Semua')}
                                     className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
                                 >
-                                    Lihat Semua UMKM
+                                    Reset Filter
                                 </button>
                             </div>
                         )}
@@ -319,11 +427,11 @@ export default function UmkmPrograms({ featured_umkms, categories, stats }: Prop
                 {/* Main CTA */}
                 <div className="text-center">
                     <Link
-                        href={route('umkm.index', { category: 'Semua' })}
-                        className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-200 shadow-lg hover:shadow-xl"
+                        href="/umkm/list-umkm"
+                        className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
                     >
                         <span>Lihat Semua UMKM</span>
-                        <ArrowRight className="w-5 h-5 ml-2" />
+                        <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                     </Link>
                 </div>
             </div>

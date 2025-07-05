@@ -176,13 +176,34 @@ export default function UmkmIndex({ umkms, categories, filters, stats }: Props) 
         return currentTime >= openTime && currentTime <= closeTime;
     };
 
-    const getDisplayImage = (umkm: Umkm) => {
+    const getDisplayImage = (umkm: any) => {
         // Jika ada foto display, gunakan foto pertama
         if (umkm.display_photos && umkm.display_photos.length > 0) {
             return `/storage/umkm/display/${umkm.display_photos[0]}`;
         }
         // Jika tidak ada foto, return null untuk tampilkan icon
         return null;
+    };
+
+    // FIXED: Function to properly format opening hours display
+    const formatOpeningHoursDisplay = (umkm: Umkm) => {
+        const todayHours = getTodayOpeningHours(umkm);
+        if (!todayHours) return null;
+        
+        const currentlyOpen = isCurrentlyOpen(umkm);
+        
+        if (!todayHours.is_open) {
+            return { text: 'Tutup', isOpen: false };
+        }
+        
+        if (currentlyOpen) {
+            return { text: 'Buka Sekarang', isOpen: true };
+        }
+        
+        return { 
+            text: `${todayHours.open_time}-${todayHours.close_time}`, 
+            isOpen: false 
+        };
     };
 
     return (
@@ -353,11 +374,10 @@ export default function UmkmIndex({ umkms, categories, filters, stats }: Props) 
                         )}
                     </div>
 
-                    {/* UMKM Grid - New Card Style */}
+                    {/* UMKM Grid - FIXED Opening Hours Display */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
                         {umkms.data.map((umkm) => {
-                            const todayHours = getTodayOpeningHours(umkm);
-                            const currentlyOpen = isCurrentlyOpen(umkm);
+                            const openingHoursDisplay = formatOpeningHoursDisplay(umkm);
                             const displayImage = getDisplayImage(umkm);
                             
                             return (
@@ -389,19 +409,16 @@ export default function UmkmIndex({ umkms, categories, filters, stats }: Props) 
                                             </span>
                                         </div>
 
-                                        {/* Opening Hours Badge */}
-                                        {todayHours && (
+                                        {/* Opening Hours Badge - FIXED */}
+                                        {openingHoursDisplay && (
                                             <div className="absolute top-3 right-3">
                                                 <div className={`flex items-center space-x-1 px-2.5 py-1 rounded-full text-xs font-medium ${
-                                                    currentlyOpen ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                                                    openingHoursDisplay.isOpen 
+                                                        ? 'bg-green-100 text-green-800' 
+                                                        : 'bg-red-100 text-red-800'
                                                 }`}>
                                                     <Clock className="w-3 h-3" />
-                                                    <span>
-                                                        {todayHours.is_open 
-                                                            ? (currentlyOpen ? 'Buka' : `${todayHours.open_time}-${todayHours.close_time}`)
-                                                            : 'Tutup'
-                                                        }
-                                                    </span>
+                                                    <span>{openingHoursDisplay.text}</span>
                                                 </div>
                                             </div>
                                         )}

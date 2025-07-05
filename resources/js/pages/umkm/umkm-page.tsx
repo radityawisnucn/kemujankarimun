@@ -1,8 +1,8 @@
 import { Head, Link } from '@inertiajs/react';
+import { useEffect } from 'react';
 import UmkmHero from '@/components/umkm/umkm-hero';
 import UmkmAbout from '@/components/umkm/umkm-about';
 import UmkmPrograms from '@/components/umkm/umkm-programs';
-import UmkmGallery from '@/components/umkm/umkm-gallery';
 import UmkmContact from '@/components/umkm/umkm-contact';
 import UmkmFooter from '@/components/umkm/umkm-footer';
 
@@ -56,9 +56,36 @@ interface UmkmPageProps {
 }
 
 export default function UmkmPage({ stats, featured_products, featured_umkms, categories }: UmkmPageProps) {
+    
+    // Handle hash navigation ketika halaman pertama kali load
+    useEffect(() => {
+        const handleHashNavigation = () => {
+            const hash = window.location.hash;
+            if (hash) {
+                // Tunggu sebentar agar DOM sudah ter-render
+                setTimeout(() => {
+                    const element = document.getElementById(hash.substring(1));
+                    if (element) {
+                        element.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }, 100);
+            }
+        };
+
+        // Handle saat halaman pertama load
+        handleHashNavigation();
+
+        // Handle saat hash berubah (back/forward browser)
+        window.addEventListener('hashchange', handleHashNavigation);
+
+        return () => {
+            window.removeEventListener('hashchange', handleHashNavigation);
+        };
+    }, []);
+
     return (
         <>
-            <Head title="UMKM Desa Turus - Polanharjo, Klaten" />
+            <Head title="UMKM Desa Kemujan - Karimunjawa, Jepara" />
             
             <div className="min-h-screen bg-white">
                 {/* Hero Section dengan Navigation */}
@@ -73,10 +100,7 @@ export default function UmkmPage({ stats, featured_products, featured_umkms, cat
                     categories={categories}
                     stats={stats} 
                 />
-                
-                {/* Gallery Section */}
-                <UmkmGallery />
-                
+
                 {/* Contact Section */}
                 <UmkmContact />
                 

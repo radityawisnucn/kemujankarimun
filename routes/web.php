@@ -28,16 +28,24 @@ Route::get('/seaweed-type', [SeaweedTypeController::class, 'userIndex'])->name('
 Route::get('/user/processing-methods', [ProcessingMethodController::class, 'publicIndex'])->name('processing-methods.public.index');
 
 // ==========================================
-// UMKM ROUTES (PUBLIC)
+// UMKM ROUTES (PUBLIC) - UPDATED
 // ==========================================
 
 // Route utama UMKM - halaman landing
 Route::get('/umkm', [UmkmController::class, 'index'])->name('umkm.index');
 
-// Route untuk daftar UMKM dengan filter
+// Route untuk daftar UMKM dengan filter (URL baru sesuai permintaan)
+Route::get('/umkm/list-umkm', [UmkmController::class, 'listUmkm'])->name('umkm.list');
+
+// Route untuk halaman program kerja (BARU)
+Route::get('/umkm/program-kerja', function () {
+    return Inertia::render('umkm/program-kerja');
+})->name('umkm.program-kerja');
+
+// Route legacy untuk backward compatibility (redirect ke route baru)
 Route::get('/umkm/list', function(Request $request) {
-    return app(UmkmController::class)->getFilteredUmkms($request);
-})->name('umkm.list');
+    return redirect()->route('umkm.list', $request->all());
+})->name('umkm.list.legacy');
 
 // Route detail UMKM
 Route::get('/umkm/{umkm}', [UmkmController::class, 'show'])->name('umkm.show');

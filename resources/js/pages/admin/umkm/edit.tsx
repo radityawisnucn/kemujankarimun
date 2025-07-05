@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, router } from '@inertiajs/react';
 import AdminSidebar from '@/components/AdminSidebar';
 import AdminNavbar from '@/components/AdminNavbar';
 import { Plus, X, Clock, Upload, Image as ImageIcon } from 'lucide-react';
@@ -15,6 +15,8 @@ interface Umkm {
     contact: string;
     rating: number;
     image: string;
+    display_photos?: string[];
+    menu_photo?: string;
     instagram?: string;
     facebook?: string;
     opening_hours?: {
@@ -40,7 +42,7 @@ interface Props {
 }
 
 export default function EditUmkm({ umkm, categories, defaultOpeningHours }: Props) {
-    const { data, setData, put, processing, errors } = useForm({
+    const { data, setData, processing, errors, clearErrors } = useForm({
         name: umkm.name,
         owner: umkm.owner,
         category: umkm.category,
@@ -50,26 +52,29 @@ export default function EditUmkm({ umkm, categories, defaultOpeningHours }: Prop
         contact: umkm.contact,
         rating: umkm.rating,
         image: umkm.image,
-        display_photos: [] as File[],
-        menu_photo: null as File | null,
-        remove_display_photos: [] as string[],
-        remove_menu_photo: false,
         instagram: umkm.instagram || '',
         facebook: umkm.facebook || '',
         opening_hours: umkm.opening_hours || defaultOpeningHours,
         is_active: umkm.is_active,
     });
 
+    const [displayPhotos, setDisplayPhotos] = useState<File[]>([]);
+    const [menuPhoto, setMenuPhoto] = useState<File | null>(null);
     const [displayPhotosPreviews, setDisplayPhotosPreviews] = useState<string[]>([]);
     const [menuPhotoPreview, setMenuPhotoPreview] = useState<string | null>(null);
     const [existingDisplayPhotos, setExistingDisplayPhotos] = useState<string[]>(umkm.display_photos || []);
     const [existingMenuPhoto, setExistingMenuPhoto] = useState<string | null>(umkm.menu_photo || null);
+    const [removeDisplayPhotos, setRemoveDisplayPhotos] = useState<string[]>([]);
+    const [removeMenuPhoto, setRemoveMenuPhoto] = useState<boolean>(false);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         
+        // Clear previous errors
+        clearErrors();
+        
         // Validasi display requirement
-        const totalDisplayPhotos = existingDisplayPhotos.length + data.display_photos.length;
+        const totalDisplayPhotos = existingDisplayPhotos.length + displayPhotos.length;
         if (totalDisplayPhotos === 0 && !data.image) {
             alert('Wajib memiliki minimal 1 foto display atau pilih icon untuk UMKM!');
             return;
@@ -77,45 +82,57 @@ export default function EditUmkm({ umkm, categories, defaultOpeningHours }: Prop
         
         const formData = new FormData();
         
-        // Add text fields
-        Object.keys(data).forEach(key => {
-            if (key === 'display_photos' || key === 'menu_photo') return;
-            
-            const value = data[key as keyof typeof data];
-            if (Array.isArray(value)) {
-                if (key === 'products') {
-                    value.forEach((item, index) => {
-                        formData.append(`${key}[${index}]`, item);
-                    });
-                } else if (key === 'opening_hours') {
-                    formData.append(key, JSON.stringify(value));
-                } else if (key === 'remove_display_photos') {
-                    value.forEach((item, index) => {
-                        formData.append(`${key}[${index}]`, item);
-                    });
-                } else {
-                    formData.append(key, JSON.stringify(value));
-                }
-            } else if (typeof value === 'boolean') {
-                formData.append(key, value ? '1' : '0');
-            } else if (value !== null && value !== undefined) {
-                formData.append(key, value.toString());
-            }
+        // Add basic form data
+        formData.append('name', data.name);
+        formData.append('owner', data.owner);
+        formData.append('category', data.category);
+        formData.append('description', data.description);
+        formData.append('address', data.address);
+        formData.append('contact', data.contact);
+        formData.append('rating', data.rating.toString());
+        formData.append('image', data.image);
+        formData.append('instagram', data.instagram);
+        formData.append('facebook', data.facebook);
+        formData.append('is_active', data.is_active ? '1' : '0');
+        
+        // Add products
+        data.products.forEach((product, index) => {
+            formData.append(`products[${index}]`, product);
         });
         
-        // Add display photos
-        data.display_photos.forEach((file, index) => {
+        // Add opening hours
+        formData.append('opening_hours', JSON.stringify(data.opening_hours));
+        
+        // Add new display photos
+        displayPhotos.forEach((file, index) => {
             formData.append(`display_photos[${index}]`, file);
         });
         
-        // Add menu photo
-        if (data.menu_photo) {
-            formData.append('menu_photo', data.menu_photo);
+        // Add new menu photo
+        if (menuPhoto) {
+            formData.append('menu_photo', menuPhoto);
         }
         
-        put(route('admin.umkm.update', umkm.id), {
-            data: formData,
-            forceFormData: true,
+        // Add photos to remove
+        removeDisplayPhotos.forEach((photo, index) => {
+            formData.append(`remove_display_photos[${index}]`, photo);
+        });
+        
+        if (removeMenuPhoto) {
+            formData.append('remove_menu_photo', '1');
+        }
+        
+        // Add _method for Laravel to handle as PUT
+        formData.append('_method', 'PUT');
+        
+        // Use router.post instead of put for file uploads
+        router.post(route('admin.umkm.update', umkm.id), formData, {
+            onSuccess: () => {
+                // Redirect or show success message
+            },
+            onError: (errors) => {
+                console.error('Validation errors:', errors);
+            },
         });
     };
 
@@ -147,7 +164,7 @@ export default function EditUmkm({ umkm, categories, defaultOpeningHours }: Prop
 
     const handleDisplayPhotosChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(e.target.files || []);
-        const currentPhotos = data.display_photos;
+        const currentPhotos = displayPhotos;
         const totalPhotos = existingDisplayPhotos.length + currentPhotos.length + files.length;
         
         if (totalPhotos > 3) {
@@ -156,7 +173,7 @@ export default function EditUmkm({ umkm, categories, defaultOpeningHours }: Prop
         }
         
         const newPhotos = [...currentPhotos, ...files];
-        setData('display_photos', newPhotos);
+        setDisplayPhotos(newPhotos);
         
         // Create previews
         const newPreviews = [...displayPhotosPreviews];
@@ -171,23 +188,23 @@ export default function EditUmkm({ umkm, categories, defaultOpeningHours }: Prop
     };
 
     const removeDisplayPhoto = (index: number) => {
-        const newPhotos = data.display_photos.filter((_, i) => i !== index);
+        const newPhotos = displayPhotos.filter((_, i) => i !== index);
         const newPreviews = displayPhotosPreviews.filter((_, i) => i !== index);
-        setData('display_photos', newPhotos);
+        setDisplayPhotos(newPhotos);
         setDisplayPhotosPreviews(newPreviews);
     };
 
     const removeExistingDisplayPhoto = (photo: string) => {
         const newExistingPhotos = existingDisplayPhotos.filter(p => p !== photo);
-        const newRemoveList = [...data.remove_display_photos, photo];
+        const newRemoveList = [...removeDisplayPhotos, photo];
         setExistingDisplayPhotos(newExistingPhotos);
-        setData('remove_display_photos', newRemoveList);
+        setRemoveDisplayPhotos(newRemoveList);
     };
 
     const handleMenuPhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            setData('menu_photo', file);
+            setMenuPhoto(file);
             
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -197,14 +214,14 @@ export default function EditUmkm({ umkm, categories, defaultOpeningHours }: Prop
         }
     };
 
-    const removeMenuPhoto = () => {
-        setData('menu_photo', null);
+    const removeNewMenuPhoto = () => {
+        setMenuPhoto(null);
         setMenuPhotoPreview(null);
     };
 
     const removeExistingMenuPhoto = () => {
         setExistingMenuPhoto(null);
-        setData('remove_menu_photo', true);
+        setRemoveMenuPhoto(true);
     };
 
     const days = [
@@ -523,7 +540,7 @@ export default function EditUmkm({ umkm, categories, defaultOpeningHours }: Prop
                                         </div>
                                     ))}
                                     
-                                    {(existingDisplayPhotos.length + data.display_photos.length) < 3 && (
+                                    {(existingDisplayPhotos.length + displayPhotos.length) < 3 && (
                                         <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
                                             <input
                                                 type="file"
@@ -550,7 +567,7 @@ export default function EditUmkm({ umkm, categories, defaultOpeningHours }: Prop
                                 </div>
 
                                 {/* Alternatif: Gunakan Icon jika tidak ada foto */}
-                                {existingDisplayPhotos.length === 0 && data.display_photos.length === 0 && (
+                                {existingDisplayPhotos.length === 0 && displayPhotos.length === 0 && (
                                     <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                                         <div className="flex items-start space-x-3">
                                             <div className="flex-shrink-0">
@@ -614,7 +631,7 @@ export default function EditUmkm({ umkm, categories, defaultOpeningHours }: Prop
                                             />
                                             <button
                                                 type="button"
-                                                onClick={removeMenuPhoto}
+                                                onClick={removeNewMenuPhoto}
                                                 className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
                                             >
                                                 <X className="w-4 h-4" />

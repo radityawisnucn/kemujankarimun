@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { router } from '@inertiajs/react';
-import { Mail, Phone, MapPin, Send, Linkedin, Github, Instagram } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, ArrowRight, Linkedin, Github, Instagram } from 'lucide-react';
+import { Link } from '@inertiajs/react';
 
 export default function UmkmContact() {
     const teamMembers = [
@@ -109,6 +110,18 @@ export default function UmkmContact() {
                     </div>
                 </div>
             </div>
+            
+            {/* Main CTA */}
+                <div className="text-center">
+                    <Link
+                        href="/umkm/program-kerja"
+                        className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
+                    >
+                        <span>Lihat Program Kerja</span>
+                        <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                </div>
+
         </section>
     );
 }
