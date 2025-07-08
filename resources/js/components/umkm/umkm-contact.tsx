@@ -68,12 +68,12 @@ export default function UmkmContact() {
     ];
 
     return (
-        <section id="contact" className="py-20 bg-white">
+        <section id="contact" className="py-20 bg-[rgb(12,52,76)]">
             <div className="container mx-auto px-4">
                 {/* Meet Our Team Section */}
                 <div className="text-center mb-20">
-                    <h2 className="text-5xl font-bold text-gray-900 mb-16">
-                        Temu Sapa dengan Kami 👋
+                    <h2 className="text-5xl font-bold text-white mb-16">
+                        Lebih Detail Tentang Program Kerja UMKM 👋
                     </h2>
                     
                     {/* Overlapping Team Photos Layout - All Members */}
@@ -100,7 +100,7 @@ export default function UmkmContact() {
                                     
                                     {/* Name Below Photo - Clean without border */}
                                     <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-max">
-                                        <h3 className="font-semibold text-gray-900 text-sm lg:text-base whitespace-nowrap">
+                                        <h3 className="font-semibold text-white text-sm lg:text-base whitespace-nowrap">
                                             {member.name}
                                         </h3>
                                     </div>
@@ -115,7 +115,7 @@ export default function UmkmContact() {
                 <div className="text-center">
                     <Link
                         href="/umkm/program-kerja"
-                        className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
+                        className="group relative inline-flex items-center space-x-2 transform overflow-hidden rounded-lg border border-white/30 bg-white/5 px-6 py-3 text-white shadow-lg backdrop-blur-md transition-all duration-500 ease-in-out before:absolute before:inset-0 before:rounded-lg before:bg-gradient-to-br before:from-transparent before:via-transparent before:to-transparent before:opacity-0 before:transition-all before:duration-500 hover:scale-[1.03] hover:bg-[#64FFDA] hover:shadow-[#64FFDA]/30 hover:before:from-[#64FFDA]/10 hover:before:to-transparent hover:before:opacity-100 hover:text-[rgb(12,52,76)]"
                     >
                         <span>Lihat Program Kerja</span>
                         <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />

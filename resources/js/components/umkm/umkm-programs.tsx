@@ -8,7 +8,6 @@ import {
     ExternalLink,
     Instagram,
     Facebook,
-    ArrowRight,
     Users,
     Award,
     ShoppingBag,
@@ -55,8 +54,6 @@ interface CategoryStat {
 interface Stats {
     total_umkm: number;
     total_products: number;
-    certified_halal: number;
-    revenue_increase: number;
 }
 
 interface Props {
@@ -66,8 +63,16 @@ interface Props {
 }
 
 export default function UmkmPrograms({ featured_umkms, categories, stats }: Props) {
-    const [selectedCategory, setSelectedCategory] = useState<string>('Semua');
-    
+    const [selectedCategory, setSelectedCategory] = useState('Semua');
+
+    // Safety checks for data
+    const safeFeaturedUmkms = featured_umkms || [];
+    const safeCategories = categories || [];
+    const safeStats = stats || {
+        total_umkm: safeFeaturedUmkms.length,
+        total_products: 0,
+    };
+
     // Helper function untuk mendapatkan display image
     const getDisplayImage = (umkm: Umkm) => {
         if (umkm.display_photos && umkm.display_photos.length > 0) {
@@ -89,13 +94,6 @@ export default function UmkmPrograms({ featured_umkms, categories, stats }: Prop
         }
         return 'Tutup';
     };
-    
-    // Filter UMKM berdasarkan kategori yang dipilih
-    const filteredUmkms = useMemo(() => {
-        if (!featured_umkms) return [];
-        if (selectedCategory === 'Semua') return featured_umkms;
-        return featured_umkms.filter(umkm => umkm.category === selectedCategory);
-    }, [featured_umkms, selectedCategory]);
 
     const renderStars = (rating: number) => {
         return Array.from({ length: 5 }, (_, i) => (
@@ -108,78 +106,63 @@ export default function UmkmPrograms({ featured_umkms, categories, stats }: Prop
         ));
     };
 
-    // Prepare categories list 
+    // Prepare categories list dengan "Semua"
     const allCategories = useMemo(() => {
-        if (!categories) return [{ name: 'Semua', count: featured_umkms?.length || 0 }];
-        
-        // Cek apakah 'Semua' sudah ada di categories
-        const hasSemuaCategory = categories.some(cat => cat.name === 'Semua');
+        const hasSemuaCategory = safeCategories.some(cat => cat.name === 'Semua');
         
         if (hasSemuaCategory) {
-            // Jika sudah ada, langsung gunakan categories
-            return categories;
+            return safeCategories;
         } else {
-            // Jika belum ada, tambahkan 'Semua' di awal
+            const totalCount = safeCategories.reduce((sum, cat) => sum + cat.count, 0);
             return [
-                { name: 'Semua', count: featured_umkms?.length || 0 },
-                ...categories
+                { name: 'Semua', count: totalCount || safeFeaturedUmkms.length },
+                ...safeCategories
             ];
         }
-    }, [categories, featured_umkms]);
+    }, [safeCategories, safeFeaturedUmkms]);
+
+    // Filter UMKM berdasarkan kategori yang dipilih
+    const filteredUmkms = useMemo(() => {
+        if (selectedCategory === 'Semua') {
+            return safeFeaturedUmkms;
+        }
+        return safeFeaturedUmkms.filter(umkm => umkm.category === selectedCategory);
+    }, [safeFeaturedUmkms, selectedCategory]);
 
     return (
-        <section id="programs" className="py-16 bg-gray-50">
+        <section id="programs" className="py-16 bg-[rgb(12,52,76)]">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Section Header */}
+                {/* Section Header - Ocean Theme */}
                 <div className="text-center mb-12">
-                    <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                        UMKM Unggulan Desa Kemujan, Karimun Jawa
+                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                        UMKM Unggulan Desa Kemujan
                     </h2>
-                    <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                        Berikut adalah usaha mikro, kecil, dan menengah terbaik di Desa Kemujan 
-                        yang telah dipilih berdasarkan kualitas produk, pelayanan, dan kontribusi 
-                        terhadap ekonomi lokal.
+                    <p className="text-lg text-white/80 max-w-3xl mx-auto">
+                        Jelajahi usaha mikro, kecil, dan menengah terbaik di Desa Kemujan yang telah dipilih 
+                        berdasarkan kualitas produk, pelayanan, dan kontribusi terhadap ekonomi lokal.
                     </p>
                 </div>
 
-                {/* Statistics Row */}
-                {stats && (
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-                        <div className="bg-white rounded-lg p-6 text-center shadow-sm border border-blue-100">
-                            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                                <Users className="w-6 h-6 text-blue-600" />
-                            </div>
-                            <div className="text-2xl font-bold text-blue-600 mb-1">{stats.total_umkm}+</div>
-                            <div className="text-sm text-gray-600">Total UMKM</div>
+                {/* Statistics Row - Ocean Theme */}
+                <div className="grid grid-cols-2 md:grid-cols-2 gap-6 mb-12">
+                    <div className="bg-white/10 backdrop-blur-md rounded-lg p-6 text-center shadow-lg border border-[#64FFDA]/20">
+                        <div className="w-12 h-12 bg-[#64FFDA]/20 rounded-lg flex items-center justify-center mx-auto mb-3">
+                            <Users className="w-6 h-6 text-[#64FFDA]" />
                         </div>
-                        
-                        <div className="bg-white rounded-lg p-6 text-center shadow-sm border border-green-100">
-                            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                                <ShoppingBag className="w-6 h-6 text-green-600" />
-                            </div>
-                            <div className="text-2xl font-bold text-green-600 mb-1">{stats.total_products}+</div>
-                            <div className="text-sm text-gray-600">Jenis Produk</div>
-                        </div>
-                        
-                        <div className="bg-white rounded-lg p-6 text-center shadow-sm border border-orange-100">
-                            <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                                <Award className="w-6 h-6 text-orange-600" />
-                            </div>
-                            <div className="text-2xl font-bold text-orange-600 mb-1">{stats.certified_halal}%</div>
-                            <div className="text-sm text-gray-600">Terverifikasi</div>
-                        </div>
-                        
-                        <div className="bg-white rounded-lg p-6 text-center shadow-sm border border-purple-100">
-                            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                                <TrendingUp className="w-6 h-6 text-purple-600" />
-                            </div>
-                            <div className="text-2xl font-bold text-purple-600 mb-1">{stats.revenue_increase}%</div>
-                            <div className="text-sm text-gray-600">Peningkatan Omzet</div>
-                        </div>
+                        <div className="text-2xl font-bold text-[#64FFDA] mb-1">{safeStats.total_umkm}+</div>
+                        <div className="text-sm text-white/80">Total UMKM</div>
                     </div>
-                )}
+                    
+                    <div className="bg-white/10 backdrop-blur-md rounded-lg p-6 text-center shadow-lg border border-[#64FFDA]/20">
+                        <div className="w-12 h-12 bg-[#64FFDA]/20 rounded-lg flex items-center justify-center mx-auto mb-3">
+                            <ShoppingBag className="w-6 h-6 text-[#64FFDA]" />
+                        </div>
+                        <div className="text-2xl font-bold text-[#64FFDA] mb-1">{safeStats.total_products}+</div>
+                        <div className="text-sm text-white/80">Jenis Produk</div>
+                    </div>
+                </div>
 
-                {/* Category Filter */}
+                {/* Category Filter - Ocean Theme */}
                 {allCategories && allCategories.length > 1 && (
                     <div className="mb-8">
                         <div className="flex flex-wrap justify-center gap-4">
@@ -187,17 +170,17 @@ export default function UmkmPrograms({ featured_umkms, categories, stats }: Prop
                                 <button
                                     key={category.name}
                                     onClick={() => setSelectedCategory(category.name)}
-                                    className={`group flex items-center space-x-3 px-6 py-3 rounded-full font-medium transition-all duration-200 shadow-sm hover:shadow-md ${
+                                    className={`group flex items-center space-x-3 px-6 py-3 rounded-full font-medium transition-all duration-300 shadow-2xl backdrop-blur-md ${
                                         selectedCategory === category.name
-                                            ? 'bg-blue-600 text-white border border-blue-600'
-                                            : 'bg-white hover:bg-blue-50 border border-blue-200 hover:border-blue-300 text-blue-700 hover:text-blue-800'
+                                            ? 'bg-[#64FFDA] text-[rgb(12,52,76)] border border-[#64FFDA] scale-105'
+                                            : 'bg-white/10 text-white border border-white/20 hover:bg-white/15 hover:border-[#64FFDA]/40 hover:shadow-2xl hover:shadow-[#64FFDA]/40'
                                     }`}
                                 >
                                     <span>{category.name}</span>
                                     <span className={`text-xs px-2 py-1 rounded-full ${
                                         selectedCategory === category.name
-                                            ? 'bg-blue-500 text-white'
-                                            : 'bg-blue-100 text-blue-600'
+                                            ? 'bg-[rgb(12,52,76)] text-[#64FFDA]'
+                                            : 'bg-white/20 text-white'
                                     }`}>
                                         {category.count}
                                     </span>
@@ -208,11 +191,11 @@ export default function UmkmPrograms({ featured_umkms, categories, stats }: Prop
                 )}
 
                 {/* UMKM Grid - Data dari Admin Panel dengan Filter */}
-                {featured_umkms && featured_umkms.length > 0 ? (
+                {safeFeaturedUmkms && safeFeaturedUmkms.length > 0 ? (
                     <>
-                        {/* Show current filter info */}
+                        {/* Current filter info */}
                         <div className="mb-6 text-center">
-                            <p className="text-gray-600">
+                            <p className="text-white/80">
                                 Menampilkan {filteredUmkms.length} UMKM 
                                 {selectedCategory !== 'Semua' && ` dalam kategori "${selectedCategory}"`}
                             </p>
@@ -225,8 +208,8 @@ export default function UmkmPrograms({ featured_umkms, categories, stats }: Prop
                                     const todayHours = getTodayOpeningHours(umkm);
                                     
                                     return (
-                                        <div key={umkm.id} className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group flex flex-col h-full umkm-card-hover">
-                                            {/* Image Section - Admin Style */}
+                                        <div key={umkm.id} className="bg-white/10 backdrop-blur-md rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group flex flex-col h-full border border-white/20 hover:border-[#64FFDA]/40">
+                                            {/* Image Section */}
                                             <div className="relative h-48 bg-gradient-to-br from-blue-50 to-blue-100">
                                                 {displayImage ? (
                                                     <>
@@ -255,92 +238,88 @@ export default function UmkmPrograms({ featured_umkms, categories, stats }: Prop
                                                 
                                                 {/* Status Badge */}
                                                 <div className="absolute top-3 left-3">
-                                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
                                                         Aktif
                                                     </span>
                                                 </div>
                                                 
                                                 {/* Operating Hours */}
                                                 <div className="absolute top-3 right-3">
-                                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-white bg-opacity-90 text-gray-800">
+                                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-white/90 text-gray-800 backdrop-blur-sm border border-gray-200">
                                                         <Clock className="w-3 h-3 mr-1" />
                                                         {todayHours}
                                                     </span>
                                                 </div>
-
-                                                {/* Verified Badge */}
-                                                {umkm.is_verified && (
-                                                    <div className="absolute bottom-3 left-3">
-                                                        <div className="flex items-center space-x-1 text-green-600 bg-white bg-opacity-90 px-2 py-1 rounded-full">
-                                                            <CheckCircle className="w-4 h-4" />
-                                                            <span className="text-xs font-medium">Verified</span>
-                                                        </div>
-                                                    </div>
-                                                )}
                                             </div>
 
-                                            {/* Card Content */}
-                                            <div className="p-6 flex-grow flex flex-col">
+                                             {/* Card Content */}
+                                             <div className="p-6 flex-grow flex flex-col">
                                                 {/* Header */}
                                                 <div className="flex items-start justify-between mb-4">
                                                     <div className="min-w-0 flex-1">
-                                                        <h3 className="font-bold text-gray-900 text-lg truncate group-hover:text-blue-600 transition-colors">
+                                                        <h3 className="font-bold text-white text-lg truncate group-hover:text-[#64FFDA] transition-colors">
                                                             {umkm.name}
                                                         </h3>
-                                                        <p className="text-sm text-gray-600 truncate">{umkm.owner}</p>
+                                                        <p className="text-sm text-white/80 truncate">{umkm.owner}</p>
                                                         <div className="flex items-center space-x-1 mt-1">
                                                             {renderStars(umkm.rating)}
-                                                            <span className="text-xs text-gray-500 ml-1">({umkm.rating})</span>
+                                                            <span className="text-xs text-white/60 ml-1">({umkm.rating})</span>
                                                         </div>
                                                     </div>
                                                 </div>
 
                                                 {/* Category */}
                                                 <div className="mb-4">
-                                                    <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-medium">
+                                                    <span className="inline-block bg-[#64FFDA]/20 text-[#64FFDA] text-xs px-2 py-1 rounded-full font-medium border border-[#64FFDA]/30">
                                                         {umkm.category}
                                                     </span>
                                                 </div>
 
-                                                {/* Description - Fixed height dengan line clamp */}
+                                                {/* Description */}
                                                 <div className="mb-4 flex-shrink-0">
-                                                    <p className="text-gray-600 text-sm leading-relaxed h-12 overflow-hidden">
+                                                    <p className="text-white/70 text-sm leading-relaxed h-12 overflow-hidden">
                                                         <span className="line-clamp-3">{umkm.description}</span>
                                                     </p>
                                                 </div>
 
-                                                {/* Address - Fixed height */}
+                                                {/* Address */}
                                                 <div className="flex items-start space-x-2 mb-4 flex-shrink-0">
-                                                    <MapPin className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                                                    <span className="text-sm text-gray-600 line-clamp-2 leading-relaxed">{umkm.address}</span>
+                                                    <MapPin className="w-4 h-4 text-white/60 mt-0.5 flex-shrink-0" />
+                                                    <span className="text-sm text-white/70 line-clamp-2 leading-relaxed">{umkm.address}</span>
                                                 </div>
 
-                                                {/* Products - Fixed height */}
+                                                {/* Products */}
                                                 <div className="mb-4 flex-shrink-0">
-                                                    <h4 className="text-sm font-medium text-gray-900 mb-2">Produk:</h4>
+                                                    <h4 className="text-sm font-medium text-white mb-2">Produk:</h4>
                                                     <div className="flex flex-wrap gap-1 min-h-[2rem]">
-                                                        {umkm.products.slice(0, 3).map((product, index) => (
-                                                            <span
-                                                                key={index}
-                                                                className="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded truncate max-w-[120px]"
-                                                                title={product}
-                                                            >
-                                                                {product}
-                                                            </span>
-                                                        ))}
-                                                        {umkm.products.length > 3 && (
-                                                            <span className="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded">
-                                                                +{umkm.products.length - 3} lainnya
-                                                            </span>
+                                                        {umkm.products && umkm.products.length > 0 ? (
+                                                            <>
+                                                                {umkm.products.slice(0, 3).map((product, index) => (
+                                                                    <span
+                                                                        key={index}
+                                                                        className="inline-block bg-white/10 text-white text-xs px-2 py-1 rounded truncate max-w-[120px] border border-white/20"
+                                                                        title={product}
+                                                                    >
+                                                                        {product}
+                                                                    </span>
+                                                                ))}
+                                                                {umkm.products.length > 3 && (
+                                                                    <span className="inline-block bg-white/10 text-white text-xs px-2 py-1 rounded border border-white/20">
+                                                                        +{umkm.products.length - 3} lainnya
+                                                                    </span>
+                                                                )}
+                                                            </>
+                                                        ) : (
+                                                            <span className="text-xs text-white/60">Tidak ada produk tersedia</span>
                                                         )}
                                                     </div>
                                                 </div>
-
-                                                {/* Contact and Social Media - Push to bottom */}
+                                            
+                                                {/* Contact and Social Media */}
                                                 <div className="flex items-center justify-between mt-auto pt-2">
                                                     <div className="flex items-center space-x-2 flex-1 min-w-0">
-                                                        <Phone className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                                                        <span className="text-sm text-gray-600 truncate">{umkm.contact}</span>
+                                                        <Phone className="w-4 h-4 text-white/60 flex-shrink-0" />
+                                                        <span className="text-sm text-white/70 truncate">{umkm.contact}</span>
                                                     </div>
                                                     <div className="flex items-center space-x-2 flex-shrink-0 ml-2">
                                                         {umkm.instagram && (
@@ -348,7 +327,7 @@ export default function UmkmPrograms({ featured_umkms, categories, stats }: Prop
                                                                 href={umkm.instagram}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
-                                                                className="text-pink-500 hover:text-pink-600 transition-colors"
+                                                                className="text-pink-400 hover:text-pink-300 transition-colors"
                                                             >
                                                                 <Instagram className="w-4 h-4" />
                                                             </a>
@@ -358,7 +337,7 @@ export default function UmkmPrograms({ featured_umkms, categories, stats }: Prop
                                                                 href={umkm.facebook}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
-                                                                className="text-blue-600 hover:text-blue-700 transition-colors"
+                                                                className="text-blue-400 hover:text-blue-300 transition-colors"
                                                             >
                                                                 <Facebook className="w-4 h-4" />
                                                             </a>
@@ -367,18 +346,18 @@ export default function UmkmPrograms({ featured_umkms, categories, stats }: Prop
                                                 </div>
 
                                                 {/* Created Date */}
-                                                <div className="mt-3 pt-3 border-t border-gray-50">
-                                                    <p className="text-xs text-gray-400">
+                                                <div className="mt-3 pt-3 border-t border-white/20">
+                                                    <p className="text-xs text-white/60">
                                                         Bergabung: {new Date(umkm.created_at).toLocaleDateString('id-ID')}
                                                     </p>
                                                 </div>
                                             </div>
 
-                                            {/* Card Footer - Konsisten di bawah */}
-                                            <div className="bg-gray-50 px-6 py-4 mt-auto flex-shrink-0">
+                                            {/* Card Footer */}
+                                            <div className="bg-white/5 backdrop-blur-sm px-6 py-4 mt-auto flex-shrink-0 border-t border-white/20">
                                                 <Link
-                                                    href={route('umkm.show', umkm.id)}
-                                                    className="inline-flex items-center justify-center space-x-2 text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors w-full group"
+                                                    href={`/umkm/${umkm.id}`}
+                                                    className="inline-flex items-center justify-center space-x-2 text-white hover:text-[#64FFDA] font-medium text-sm transition-colors w-full group"
                                                 >
                                                     <span>Lihat Detail</span>
                                                     <ExternalLink className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -391,49 +370,49 @@ export default function UmkmPrograms({ featured_umkms, categories, stats }: Prop
                         ) : (
                             /* No results for current filter */
                             <div className="text-center py-12 mb-12">
-                                <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <Filter className="w-12 h-12 text-gray-400" />
+                                <div className="w-24 h-24 bg-white/10 border border-white/20 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-sm">
+                                    <Filter className="w-12 h-12 text-white/60" />
                                 </div>
-                                <h3 className="text-xl font-medium text-gray-900 mb-2">
+                                <h3 className="text-xl font-medium text-white mb-2">
                                     Tidak Ada UMKM dalam Kategori "{selectedCategory}"
                                 </h3>
-                                <p className="text-gray-600 mb-6">
+                                <p className="text-white/80 mb-6">
                                     Coba pilih kategori lain atau lihat semua UMKM.
                                 </p>
                                 <button
                                     onClick={() => setSelectedCategory('Semua')}
-                                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
+                                    className="group relative inline-flex items-center space-x-2 transform overflow-hidden rounded-lg border border-white/30 bg-white/5 px-6 py-3 text-white shadow-lg backdrop-blur-md transition-all duration-500 ease-in-out before:absolute before:inset-0 before:rounded-lg before:bg-gradient-to-br before:from-transparent before:via-transparent before:to-transparent before:opacity-0 before:transition-all before:duration-500 hover:scale-[1.03] hover:border-[#64FFDA] hover:shadow-[#64FFDA]/30 hover:before:from-[#64FFDA]/10 hover:before:to-transparent hover:before:opacity-100"
                                 >
-                                    Reset Filter
+                                    Reset Filter Kategori
                                 </button>
                             </div>
                         )}
+
+                        {/* Call to Action */}
+                        <div className="text-center">
+                            <Link
+                                href="/umkm/list-umkm"
+                                className="group relative inline-flex items-center space-x-2 transform overflow-hidden rounded-lg border border-white/30 bg-white/5 px-6 py-3 text-white shadow-lg backdrop-blur-md transition-all duration-500 ease-in-out before:absolute before:inset-0 before:rounded-lg before:bg-gradient-to-br before:from-transparent before:via-transparent before:to-transparent before:opacity-0 before:transition-all before:duration-500 hover:scale-[1.03] hover:bg-[#64FFDA] hover:shadow-[#64FFDA]/30 hover:before:from-[#64FFDA]/10 hover:before:to-transparent hover:before:opacity-100 hover:text-[rgb(12,52,76)]"
+                            >
+                                <span>Lihat Semua UMKM</span>
+                                <ExternalLink className="w-5 h-5" />
+                            </Link>
+                        </div>
                     </>
                 ) : (
-                    /* Fallback jika belum ada data UMKM */
+                    // Empty State - Ocean Theme
                     <div className="text-center py-12 mb-12">
-                        <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <ShoppingBag className="w-12 h-12 text-gray-400" />
+                        <div className="w-24 h-24 bg-white/10 border border-white/20 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-sm">
+                            <Filter className="w-12 h-12 text-white/60" />
                         </div>
-                        <h3 className="text-xl font-medium text-gray-900 mb-2">
+                        <h3 className="text-xl font-medium text-white mb-2">
                             Belum Ada UMKM Unggulan
                         </h3>
-                        <p className="text-gray-600 mb-6">
+                        <p className="text-white/80 mb-6">
                             UMKM unggulan akan ditampilkan di sini setelah admin menambahkannya.
                         </p>
                     </div>
                 )}
-
-                {/* Main CTA */}
-                <div className="text-center">
-                    <Link
-                        href="/umkm/list-umkm"
-                        className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
-                    >
-                        <span>Lihat Semua UMKM</span>
-                        <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                    </Link>
-                </div>
             </div>
         </section>
     );

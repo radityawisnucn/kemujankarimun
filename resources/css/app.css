@@ -59,14 +59,6 @@
     --color-sidebar-ring: var(--sidebar-ring);
 }
 
-/*
-  The default border color has changed to `currentColor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
 @layer base {
     *,
     ::after,
@@ -818,3 +810,14 @@
     page-break-after: always;
   }
 }
+
+/* Force remove wave with specific path */
+path[d*="M321.39,56.44c58-10.79,114.16-30.13,172-41.86"] {
+    display: none !important;
+}
+
+/* CSS untuk 3D flip animation */
+.perspective-1000 { perspective: 1000px; }
+.transform-style-preserve-3d { transform-style: preserve-3d; }
+.backface-hidden { backface-visibility: hidden; }
+.rotate-y-180 { transform: rotateY(180deg); }

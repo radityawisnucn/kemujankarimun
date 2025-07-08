@@ -1,42 +1,33 @@
 import React from 'react';
-import { 
-    FileText, 
-    Map, 
-    Download, 
-    MapPin, 
-    Users, 
-    Waves, 
-    Fish,
-    Camera,
-    Anchor,
-    ExternalLink
-} from 'lucide-react';
+import { Users, Anchor, Leaf, MapPin, PlayCircle, Download } from 'lucide-react';
 
-export default function UmkmAbout() {
+export default function AboutKemujan() {
     return (
-        <section id="about" className="py-16 bg-white">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="min-h-screen bg-[rgb(12,52,76)]">
+            <div className="container mx-auto px-4 py-16">
+                <div className="grid lg:grid-cols-2 gap-12">
+                    
                     {/* Left Content */}
-                    <div>
-                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-                            Tentang Desa Kemujan
-                            <span className="block text-blue-600">Karimunjawa</span>
-                        </h2>
-                        
-                        <div className="prose prose-lg text-gray-600 mb-8">
-                            <p className="mb-4">
+                    <div className="text-white">
+                        <div className="mb-8">
+                            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+                                Tentang Desa <span className="text-[#64FFDA]">Kemujan</span>
+                            </h1>
+                        </div>
+
+                        <div className="space-y-6 text-lg leading-relaxed text-gray-200">
+                            <p>
                                 Desa Kemujan merupakan salah satu desa di Kepulauan Karimunjawa, 
                                 Kabupaten Jepara, Jawa Tengah. Sebagai bagian dari Taman Nasional 
-                                Karimunjawa, desa ini memiliki potensi wisata bahari yang luar biasa 
-                                dengan keindahan pantai, terumbu karang, dan kekayaan laut yang melimpah.
+                                Karimunjawa, desa ini memiliki potensi wisata bahari yang luar biasa dengan 
+                                keindahan pantai, terumbu karang, dan kekayaan laut yang melimpah.
                             </p>
                             
-                            <p className="mb-4">
-                                Masyarakat Desa Kemujan sebagian besar berprofesi sebagai nelayan, 
-                                petani rumput laut, dan pelaku usaha pariwisata. Berbagai UMKM berkembang 
-                                pesat di desa ini, mulai dari produk olahan seafood, kerajinan khas 
-                                Karimunjawa, homestay, hingga jasa wisata bahari.
+                            <p>
+                                Masyarakat Desa Kemujan sebagian besar berprofesi sebagai nelayan, petani 
+                                rumput laut, dan pelaku usaha pariwisata. Berbagai UMKM berkembang pesat di 
+                                desa ini, mulai dari produk olahan seafood, kerajinan khas Karimunjawa, 
+                                homestay, hingga jasa wisata bahari.
                             </p>
                             
                             <p>
@@ -46,99 +37,64 @@ export default function UmkmAbout() {
                             </p>
                         </div>
 
-                        {/* Statistics */}
-                        <div className="grid grid-cols-2 gap-6 mb-8">
-                            <div className="text-center p-4 bg-blue-50 rounded-lg">
-                                <div className="flex items-center justify-center mb-2">
-                                    <Users className="w-6 h-6 text-blue-600" />
+                        {/* Feature Cards */}
+                        <div className="mt-12 space-y-4">
+                            <div className="flex items-center space-x-2 transform overflow-hidden rounded-lg border border-white/30 bg-white/5 px-6 py-3 text-white shadow-lg backdrop-blur-md transition-all duration-500 ease-in-out before:absolute before:inset-0 before:rounded-lg before:bg-gradient-to-br before:from-transparent before:via-transparent before:to-transparent before:opacity-0 before:transition-all before:duration-500 hover:scale-[1.03] hover:before:from-[#64FFDA]/10 hover:before:to-transparent hover:before:opacity-100">
+                                <div className="w-12 h-12 bg-[#64FFDA]/20 rounded-lg flex items-center justify-center">
+                                    <Anchor className="w-6 h-6 text-[#64FFDA]" />
                                 </div>
-                                <div className="text-2xl font-bold text-blue-600">2,500+</div>
-                                <div className="text-sm text-gray-600">Penduduk</div>
-                            </div>
-                            
-                            <div className="text-center p-4 bg-green-50 rounded-lg">
-                                <div className="flex items-center justify-center mb-2">
-                                    <Anchor className="w-6 h-6 text-green-600" />
+                                <div>
+                                    <h3 className="font-semibold text-white">Wisata Bahari & Diving</h3>
+                                    <p className="text-gray-300 text-sm">Eksplorasi keindahan bawah laut Karimunjawa</p>
                                 </div>
-                                <div className="text-2xl font-bold text-green-600">150+</div>
-                                <div className="text-sm text-gray-600">UMKM Aktif</div>
                             </div>
-                        </div>
+                            <div className="flex items-center space-x-2 transform overflow-hidden rounded-lg border border-white/30 bg-white/5 px-6 py-3 text-white shadow-lg backdrop-blur-md transition-all duration-500 ease-in-out before:absolute before:inset-0 before:rounded-lg before:bg-gradient-to-br before:from-transparent before:via-transparent before:to-transparent before:opacity-0 before:transition-all before:duration-500 hover:scale-[1.03] hover:before:from-[#64FFDA]/10 hover:before:to-transparent hover:before:opacity-100">
+                                <div className="w-12 h-12 bg-[#64FFDA]/20 rounded-lg flex items-center justify-center">
+                                    <Leaf className="w-6 h-6 text-[#64FFDA]" />
+                                </div>
+                                <div>
+                                    <h3 className="font-semibold text-white">Budidaya Rumput Laut</h3>
+                                    <p className="text-gray-300 text-sm">Inovasi teknologi budidaya berkelanjutan</p>
+                                </div>
+                            </div>
 
-                        {/* Key Features */}
-                        <div className="space-y-4">
-                            <div className="flex items-center space-x-3">
-                                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <Waves className="w-4 h-4 text-blue-600" />
+                            <div className="flex items-center space-x-2 transform overflow-hidden rounded-lg border border-white/30 bg-white/5 px-6 py-3 text-white shadow-lg backdrop-blur-md transition-all duration-500 ease-in-out before:absolute before:inset-0 before:rounded-lg before:bg-gradient-to-br before:from-transparent before:via-transparent before:to-transparent before:opacity-0 before:transition-all before:duration-500 hover:scale-[1.03] hover:before:from-[#64FFDA]/10 hover:before:to-transparent hover:before:opacity-100">                            
+                                <div className="w-12 h-12 bg-[#64FFDA]/20 rounded-lg flex items-center justify-center">
+                                    <MapPin className="w-6 h-6 text-[#64FFDA]" />
                                 </div>
-                                <span className="text-gray-700">Wisata Bahari & Diving</span>
-                            </div>
-                            
-                            <div className="flex items-center space-x-3">
-                                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                                    <Fish className="w-4 h-4 text-green-600" />
+                                <div>
+                                    <h3 className="font-semibold text-white">Destinasi Eco-Tourism</h3>
+                                    <p className="text-gray-300 text-sm">Pariwisata ramah lingkungan dan berkelanjutan</p>
                                 </div>
-                                <span className="text-gray-700">Budidaya Rumput Laut</span>
-                            </div>
-                            
-                            <div className="flex items-center space-x-3">
-                                <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
-                                    <Camera className="w-4 h-4 text-orange-600" />
-                                </div>
-                                <span className="text-gray-700">Destinasi Eco-Tourism</span>
                             </div>
                         </div>
                     </div>
 
-                    {/* Right Content */}
-                    <div className="space-y-6">
-                        {/* Documents & Maps Section */}
-                        <div className="bg-gray-50 rounded-2xl p-6">
-                            <h3 className="text-xl font-bold text-gray-900 mb-6">Dokumen & Peta UMKM</h3>
+                    {/* Right Content - Video & Downloads */}
+                    <div className="space-y-8">
+                        
+                        {/* Video UMKM Section */}
+                        <div className="group relative transform overflow-hidden rounded-2xl border border-white/30 bg-white/5 p-6 shadow-lg backdrop-blur-md transition-all duration-500 ease-in-out before:absolute before:inset-0 before:rounded-2xl before:bg-gradient-to-br before:from-transparent before:via-transparent before:to-transparent before:opacity-0 before:transition-all before:duration-500 hover:scale-[1.02] hover:border-[#64FFDA]/50 hover:shadow-[#64FFDA]/20 hover:before:from-[#64FFDA]/10 hover:before:to-transparent hover:before:opacity-100">
+                            <h3 className="relative z-10 text-2xl font-bold text-white mb-6 flex items-center transition-all duration-300 group-hover:text-[#64FFDA]">
+                                <PlayCircle className="w-8 h-8 text-[#64FFDA] mr-3 transition-all duration-300 group-hover:scale-110 group-hover:rotate-12" />
+                                Video UMKM Kemujan
+                            </h3>
                             
-                            <div className="space-y-4">
-                                {/* Profil UMKM Kemujan */}
-                                <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-                                    <div className="flex items-center space-x-4">
-                                        <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-                                            <FileText className="w-6 h-6 text-red-600" />
-                                        </div>
-                                        <div className="flex-1">
-                                            <h4 className="font-semibold text-gray-900">Profil UMKM Kemujan</h4>
-                                            <p className="text-sm text-gray-600">Data lengkap UMKM di Desa Kemujan</p>
-                                        </div>
-                                        <a 
-                                            href="/documents/umkm-kemujan-profile.pdf" 
-                                            download
-                                            className="flex items-center space-x-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
-                                        >
-                                            <Download className="w-4 h-4" />
-                                            <span>Download</span>
-                                        </a>
-                                    </div>
-                                </div>
-
-                                {/* Peta Persebaran UMKM */}
-                                <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-                                    <div className="flex items-center space-x-4">
-                                        <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                                            <Map className="w-6 h-6 text-blue-600" />
-                                        </div>
-                                        <div className="flex-1">
-                                            <h4 className="font-semibold text-gray-900">Peta Persebaran UMKM</h4>
-                                            <p className="text-sm text-gray-600">Lokasi sebaran UMKM di Desa Kemujan</p>
-                                        </div>
-                                        <a 
-                                            href="/maps/umkm-distribution-map.pdf" 
-                                            download
-                                            className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
-                                        >
-                                            <Download className="w-4 h-4" />
-                                            <span>Download</span>
-                                        </a>
-                                    </div>
-                                </div>
+                            {/* YouTube Video Embed */}
+                            <div className="relative z-10 w-full h-80 rounded-xl overflow-hidden mb-6 border border-white/20 transition-all duration-300 group-hover:border-[#64FFDA]/30 group-hover:shadow-lg group-hover:shadow-[#64FFDA]/10">
+                                <iframe
+                                    className="absolute inset-0 w-full h-full transition-all duration-300"
+                                    src="https://www.youtube.com/embed/YOUR_VIDEO_ID"
+                                    title="UMKM Desa Kemujan"
+                                    frameBorder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                ></iframe>
                             </div>
+                            
+                            <p className="relative z-10 text-gray-300 text-sm transition-all duration-300 group-hover:text-gray-200">
+                                Saksikan profil lengkap UMKM dan potensi ekonomi kreatif di Desa Kemujan, Karimunjawa
+                            </p>
                         </div>
 
                         {/* Google Maps Container - UPDATED */}
@@ -161,6 +117,6 @@ export default function UmkmAbout() {
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
     );
 }

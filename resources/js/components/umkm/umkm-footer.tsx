@@ -1,134 +1,72 @@
 import React from 'react';
 import { Link } from '@inertiajs/react';
-import { 
-    MapPin, 
-    Phone, 
-    Mail, 
-    Globe, 
-    Facebook, 
-    Instagram, 
-    Twitter,
-    Youtube,
-    ExternalLink,
-    Anchor,
-    Waves,
-    Fish
-} from 'lucide-react';
+import { MapPin, Phone, Mail, Globe, Instagram, Youtube, ExternalLink } from 'lucide-react';
 
 export default function UmkmFooter() {
     return (
-        <footer className="bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 text-white">
+        <footer className="bg-gradient-to-b from-[rgb(12,52,76)] via-[#0F4C75] to-[#1B9C85] text-white">
             {/* Main Footer Content */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    
                     {/* Brand Section */}
-                    <div className="lg:col-span-1">
-                        <div className="flex items-center space-x-3 mb-4">
-                            <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
-                                <span className="text-white font-bold text-lg">🏝️</span>
+                    <div className="lg:col-span-2">
+                        <div className="mb-6">
+                            <div className="flex items-center space-x-3 mb-4">
+                                <div className="w-12 h-12 bg-gradient-to-r from-[#4DD0E1] to-[#BBE1FA] rounded-lg flex items-center justify-center">
+                                    <span className="text-[#0F4C75] font-bold text-lg">🌊</span>
+                                </div>
+                                <div>
+                                    <h3 className="text-2xl font-bold text-white">UMKM Kemujan</h3>
+                                    <p className="text-[#BBE1FA] text-sm">Olah Laut Karimunjawa</p>
+                                </div>
                             </div>
-                            <div>
-                                <h3 className="text-xl font-bold">UMKM Kemujan</h3>
-                                <p className="text-blue-200 text-sm">Karimunjawa</p>
+                            
+                            <p className="text-[#BBE1FA] text-sm leading-relaxed mb-6">
+                                Platform digital yang menghubungkan produk unggulan UMKM Desa Kemujan dengan masyarakat luas. 
+                                Mendukung ekonomi lokal dan melestarikan kearifan maritim Karimunjawa.
+                            </p>
+                            
+                            {/* Social Media */}
+                            <div className="flex space-x-4">
+                                <a href="#" className="w-10 h-10 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-110">
+                                    <Instagram className="w-5 h-5" />
+                                </a>
+                                <a href="#" className="w-10 h-10 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-110">
+                                    <Youtube className="w-5 h-5" />
+                                </a>
                             </div>
-                        </div>
-                        <p className="text-gray-300 text-sm leading-relaxed mb-6">
-                            Memberdayakan UMKM di Desa Kemujan, Karimunjawa untuk 
-                            mengembangkan ekonomi berkelanjutan yang bersinergi 
-                            dengan konservasi alam.
-                        </p>
-                        
-                        {/* Social Media */}
-                        <div className="flex space-x-4">
-                            <a href="#" className="w-10 h-10 bg-pink-600 hover:bg-pink-700 rounded-lg flex items-center justify-center transition-colors">
-                                <Instagram className="w-5 h-5" />
-                            </a>
-                            <a href="#" className="w-10 h-10 bg-red-600 hover:bg-red-700 rounded-lg flex items-center justify-center transition-colors">
-                                <Youtube className="w-5 h-5" />
-                            </a>
                         </div>
                     </div>
 
                     {/* Quick Links */}
                     <div>
-                        <h4 className="text-lg font-semibold mb-4">Navigasi</h4>
+                        <h4 className="text-lg font-semibold mb-6 text-white">Navigasi</h4>
                         <ul className="space-y-3">
                             <li>
-                                <a href="http://127.0.0.1:8000/umkm#hero" className="text-gray-300 hover:text-white transition-colors text-sm">
-                                    <span>Beranda</span>
+                                <a href="http://127.0.0.1:8000/umkm#hero" className="text-[#BBE1FA] hover:text-white transition-colors text-sm flex items-center group">
+                                    <span className="group-hover:translate-x-1 transition-transform">Beranda</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="http://127.0.0.1:8000/umkm#about" className="text-gray-300 hover:text-white transition-colors text-sm">
-                                    Tentang Kemujan
+                                <a href="http://127.0.0.1:8000/umkm#about" className="text-[#BBE1FA] hover:text-white transition-colors text-sm flex items-center group">
+                                    <span className="group-hover:translate-x-1 transition-transform">Tentang Kemujan</span>
                                 </a>
                             </li>
                             <li>
                                 <Link 
                                     href="/umkm/list-umkm"
-                                    className="text-gray-300 hover:text-white transition-colors text-sm"
+                                    className="text-[#BBE1FA] hover:text-white transition-colors text-sm flex items-center group"
                                 >
-                                    UMKM Unggulan
+                                    <span className="group-hover:translate-x-1 transition-transform">UMKM Unggulan</span>
                                 </Link>
                             </li>
                             <li>
                                 <Link 
                                     href="/umkm/program-kerja"
-                                    className="text-gray-300 hover:text-white transition-colors text-sm"
+                                    className="text-[#BBE1FA] hover:text-white transition-colors text-sm flex items-center group"
                                 >
-                                    Program Kerja
-                                </Link>
-                            </li>
-                        </ul>
-                    </div>
-
-                    {/* UMKM Categories */}
-                    <div>
-                        <h4 className="text-lg font-semibold mb-4">Kategori UMKM</h4>
-                        <ul className="space-y-3">
-                            <li>
-                                <Link 
-                                    href={route('umkm.index', { category: 'Ikan & Seafood' })}
-                                    className="text-gray-300 hover:text-white transition-colors text-sm flex items-center"
-                                >
-                                    <Fish className="w-4 h-4 mr-2" />
-                                    <span>Ikan & Seafood</span>
-                                </Link>
-                            </li>
-                            <li>
-                                <Link 
-                                    href={route('umkm.index', { category: 'Rumput Laut' })}
-                                    className="text-gray-300 hover:text-white transition-colors text-sm flex items-center"
-                                >
-                                    <Waves className="w-4 h-4 mr-2" />
-                                    <span>Rumput Laut</span>
-                                </Link>
-                            </li>
-                            <li>
-                                <Link 
-                                    href={route('umkm.index', { category: 'Warung & Kuliner' })}
-                                    className="text-gray-300 hover:text-white transition-colors text-sm flex items-center"
-                                >
-                                    <span className="w-4 h-4 mr-2">🍽️</span>
-                                    <span>Warung & Kuliner</span>
-                                </Link>
-                            </li>
-                            <li>
-                                <Link 
-                                    href={route('umkm.index', { category: 'Kerajinan' })}
-                                    className="text-gray-300 hover:text-white transition-colors text-sm flex items-center"
-                                >
-                                    <span className="w-4 h-4 mr-2">🎨</span>
-                                    <span>Kerajinan</span>
-                                </Link>
-                            </li>
-                            <li>
-                                <Link 
-                                    href={route('umkm.index', { category: 'Jasa' })}
-                                    className="text-gray-300 hover:text-white transition-colors text-sm flex items-center"
-                                >
-                                    <Anchor className="w-4 h-4 mr-2" />
-                                    <span>Jasa Wisata</span>
+                                    <span className="group-hover:translate-x-1 transition-transform">Program Kerja</span>
                                 </Link>
                             </li>
                         </ul>
@@ -136,66 +74,45 @@ export default function UmkmFooter() {
 
                     {/* Contact Info */}
                     <div>
-                        <h4 className="text-lg font-semibold mb-4">Kontak Kami</h4>
+                        <h4 className="text-lg font-semibold mb-6 text-white">Kontak Info</h4>
                         <div className="space-y-4">
                             <div className="flex items-start space-x-3">
-                                <MapPin className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
+                                <MapPin className="w-5 h-5 text-[#4DD0E1] flex-shrink-0 mt-0.5" />
                                 <div>
-                                    <p className="text-gray-300 text-sm leading-relaxed">
+                                    <p className="text-[#BBE1FA] text-sm font-medium">Alamat</p>
+                                    <p className="text-[#BBE1FA] text-sm leading-relaxed">
                                         Desa Kemujan<br />
-                                        Kec. Karimunjawa<br />
+                                        Karimunjawa<br />
                                         Kab. Jepara, Jawa Tengah
                                     </p>
                                 </div>
                             </div>
                             
                             <div className="flex items-center space-x-3">
-                                <Phone className="w-5 h-5 text-blue-400 flex-shrink-0" />
-                                <p className="text-gray-300 text-sm">+62 291 XXX XXX</p>
-                            </div>
-                            
-                            <div className="flex items-center space-x-3">
-                                <Mail className="w-5 h-5 text-blue-400 flex-shrink-0" />
-                                <p className="text-gray-300 text-sm">umkm.kemujan@karimunjawa.go.id</p>
-                            </div>
-                            
-                            <div className="flex items-center space-x-3">
-                                <Globe className="w-5 h-5 text-blue-400 flex-shrink-0" />
-                                <a 
-                                    href="https://olahlautkemujan.com" 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    className="text-gray-300 hover:text-white text-sm transition-colors flex items-center"
-                                >
-                                    olahlautkemujan.com
-                                    <ExternalLink className="w-3 h-3 ml-1" />
-                                </a>
+                                <Globe className="w-5 h-5 text-[#4DD0E1] flex-shrink-0" />
+                                <div>
+                                    <p className="text-[#BBE1FA] text-sm font-medium">Website</p>
+                                    <a 
+                                        href="https://olahlautkemujan.com" 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="text-[#BBE1FA] hover:text-white text-sm transition-colors flex items-center group"
+                                    >
+                                        <span className="group-hover:translate-x-1 transition-transform">olahlautkemujan.com</span>
+                                        <ExternalLink className="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform" />
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            {/* Bottom Bar */}
-            <div className="border-t border-gray-700">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                    <div className="flex flex-col md:flex-row justify-between items-center">
-                        <div className="text-gray-400 text-sm mb-4 md:mb-0">
-                            © 2024 UMKM Desa Kemujan. Made with ♡ by Raditya Wisnu
-                        </div>
-                        <div className="flex items-center space-x-6 text-sm">
-                            <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                                Kebijakan Privasi
-                            </a>
-                            <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                                Syarat & Ketentuan
-                            </a>
-                            <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                                Bantuan
-                            </a>
+                    <div className="flex items-center justify-center mt-8">
+                        <div className="text-[#BBE1FA] text-sm md:mb-0 flex items-center">
+                            <span>© 2025 UMKM Desa Kemujan. Made with</span>
+                            <span className="text-[#FF6B35] mx-1 animate-pulse">♡</span>
+                            <span>by Raditya Wisnu, Tim KKN-T 127 Universitas Diponegoro</span>
                         </div>
                     </div>
-                </div>
             </div>
         </footer>
     );

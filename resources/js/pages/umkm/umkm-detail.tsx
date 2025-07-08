@@ -504,21 +504,6 @@ export default function UmkmDetail({ umkm, related_umkms = [] }: Props) {
                                 </div>
                             </div>
                         )}
-
-                        {/* Facilities */}
-                        {umkm.facilities && umkm.facilities.length > 0 && (
-                            <div className="mt-8">
-                                <h3 className="text-lg font-semibold text-gray-900 mb-4">Fasilitas</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                    {umkm.facilities.map((facility, index) => (
-                                        <div key={index} className="flex items-center space-x-2">
-                                            <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
-                                            <span className="text-gray-700">{facility}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
                     </div>
 
                     {/* Contact Form */}
