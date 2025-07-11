@@ -6,7 +6,7 @@ import UmkmNavbar from './UmkmNavbar';
 interface Stats {
     total_umkm: number;
     total_products: number;
-    certified_halal: number;
+    total_categories: number;
     revenue_increase: number;
 }
 
@@ -19,7 +19,7 @@ export default function UmkmHero({ stats }: Props) {
     const defaultStats = {
         total_umkm: 150,
         total_products: 25,
-        certified_halal: 80,
+        total_categories: 6,
         revenue_increase: 45
     };
 
@@ -99,11 +99,11 @@ export default function UmkmHero({ stats }: Props) {
                         </div>
                         <div className="group hover:transform hover:scale-105 transition-all duration-300">
                             <div className="text-5xl font-bold bg-gradient-to-r from-[#1B9C85] to-[#4DD0E1] bg-clip-text text-transparent mb-3">
-                                {displayStats.certified_halal}%
+                                {displayStats.total_categories}
                             </div>
                             <div className="text-sm text-white leading-tight font-medium">
-                                Sertifikasi HALAL<br />
-                                terakreditasi
+                                Kategori UMKM<br />
+                                tersedia
                             </div>
                             <div className="w-10 h-1.5 bg-gradient-to-r from-[#1B9C85] to-[#4DD0E1] rounded-full mx-auto mt-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                         </div>

@@ -53,8 +53,31 @@ Route::get('/umkm/{umkm}', [UmkmController::class, 'show'])->name('umkm.show');
 // Route untuk contact form
 Route::post('/umkm/contact', [UmkmController::class, 'store'])->name('umkm.contact.store');
 
-// API route untuk filter kategori
-Route::get('/api/umkm/category', [UmkmController::class, 'getByCategory'])->name('api.umkm.category');
+// ==========================================
+// API ROUTES untuk UMKM (BARU)
+// ==========================================
+
+// API untuk mendapatkan UMKM berdasarkan kategori dengan limit
+Route::get('/api/umkm/category/{category?}', [UmkmController::class, 'getUmkmsByCategory'])->name('api.umkm.by-category');
+
+// API untuk mendapatkan UMKM berdasarkan kategori (backward compatibility)
+Route::get('/api/umkm/by-category', [UmkmController::class, 'getByCategory'])->name('api.umkm.category');
+
+// API untuk statistik UMKM
+Route::get('/api/umkm/stats', [UmkmController::class, 'getStats'])->name('api.umkm.stats');
+
+// API untuk search UMKM (autocomplete)
+Route::get('/api/umkm/search', [UmkmController::class, 'search'])->name('api.umkm.search');
+
+// API untuk mendapatkan UMKM unggulan
+Route::get('/api/umkm/featured', [UmkmController::class, 'getFeatured'])->name('api.umkm.featured');
+
+// API untuk cek jam buka UMKM
+Route::get('/api/umkm/{umkm}/opening-hours', [UmkmController::class, 'getOpeningHours'])->name('api.umkm.opening-hours');
+Route::get('/api/umkm/{umkm}/is-open', [UmkmController::class, 'isCurrentlyOpen'])->name('api.umkm.is-open');
+
+// API untuk export data (opsional)
+Route::get('/api/umkm/export', [UmkmController::class, 'export'])->name('api.umkm.export');
 
 // ==========================================
 // AUTHENTICATED USER ROUTES
@@ -130,6 +153,14 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         // Custom actions for UMKM - HANYA toggle-active
         Route::post('/{umkm}/toggle-active', [AdminUmkmController::class, 'toggleActive'])->name('toggle-active');
     });
+
+    // ==========================================
+    // ADMIN ROUTES untuk UMKM Contact (BARU)
+    // ==========================================
+    
+    // Route untuk admin melihat pesan kontak
+    Route::get('/umkm/contacts', [UmkmController::class, 'getContactMessages'])->name('umkm.contacts');
+    Route::patch('/umkm/contacts/{contact}/read', [UmkmController::class, 'markContactAsRead'])->name('umkm.contacts.read');
 });
 
 // ==========================================

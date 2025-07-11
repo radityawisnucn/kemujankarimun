@@ -15,6 +15,7 @@ interface Umkm {
     contact: string;
     rating: number;
     image: string;
+    price_range: string;
     display_photos?: string[];
     menu_photo?: string;
     instagram?: string;
@@ -52,6 +53,7 @@ export default function EditUmkm({ umkm, categories, defaultOpeningHours }: Prop
         contact: umkm.contact,
         rating: umkm.rating,
         image: umkm.image,
+        price_range: umkm.price_range || '',
         instagram: umkm.instagram || '',
         facebook: umkm.facebook || '',
         opening_hours: umkm.opening_hours || defaultOpeningHours,
@@ -91,6 +93,7 @@ export default function EditUmkm({ umkm, categories, defaultOpeningHours }: Prop
         formData.append('contact', data.contact);
         formData.append('rating', data.rating.toString());
         formData.append('image', data.image);
+        formData.append('price_range', data.price_range);
         formData.append('instagram', data.instagram);
         formData.append('facebook', data.facebook);
         formData.append('is_active', data.is_active ? '1' : '0');
@@ -405,6 +408,24 @@ export default function EditUmkm({ umkm, categories, defaultOpeningHours }: Prop
                                 </div>
                             </div>
 
+                            {/* Price Range */}
+                            <div className="mt-6">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Kisaran Harga
+                                </label>
+                                <input
+                                    type="text"
+                                    value={data.price_range}
+                                    onChange={(e) => setData('price_range', e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                                    placeholder="Contoh: Rp 10.000 - Rp 50.000"
+                                />
+                                {errors.price_range && <p className="text-red-500 text-sm mt-1">{errors.price_range}</p>}
+                                <p className="text-gray-500 text-xs mt-1">
+                                    Optional, Kosongkan jika tidak ingin menampilkan kisaran harga
+                                </p>
+                            </div>
+
                             {/* Description */}
                             <div className="mt-6">
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -559,7 +580,7 @@ export default function EditUmkm({ umkm, categories, defaultOpeningHours }: Prop
                                                     Upload foto display
                                                 </span>
                                                 <span className="text-xs text-gray-400">
-                                                    JPG, PNG (Max 2MB)
+                                                    JPG, PNG (Max 5MB)
                                                 </span>
                                             </label>
                                         </div>
@@ -658,7 +679,7 @@ export default function EditUmkm({ umkm, categories, defaultOpeningHours }: Prop
                                                     Upload foto menu/pricelist
                                                 </span>
                                                 <span className="text-xs text-gray-400">
-                                                    JPG, PNG (Max 2MB)
+                                                    JPG, PNG (Max 5MB)
                                                 </span>
                                             </label>
                                         </div>

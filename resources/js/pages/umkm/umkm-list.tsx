@@ -117,12 +117,32 @@ export default function UmkmListPage({
         total_products: 0,
     };
 
-    // Helper function untuk mendapatkan display image
+    // PERBAIKAN: Helper function untuk mendapatkan display image - ICON HANYA SEBAGAI FALLBACK
     const getDisplayImage = (umkm: Umkm) => {
+        // PRIORITAS 1: Display photos
         if (umkm.display_photos && umkm.display_photos.length > 0) {
-            return `/storage/umkm/display/${umkm.display_photos[0]}`;
+            return {
+                type: 'photo',
+                src: `/storage/umkm/display/${umkm.display_photos[0]}`,
+                alt: umkm.name
+            };
         }
-        return null;
+        
+        // PRIORITAS 2: Menu photo
+        if (umkm.menu_photo) {
+            return {
+                type: 'photo',
+                src: `/storage/umkm/menu/${umkm.menu_photo}`,
+                alt: `${umkm.name} - Menu`
+            };
+        }
+        
+        // PRIORITAS 3: Icon emoji HANYA sebagai fallback
+        return {
+            type: 'emoji',
+            src: umkm.image || '🏪',
+            alt: umkm.name
+        };
     };
 
     // Helper function untuk mendapatkan jam buka hari ini
@@ -264,28 +284,39 @@ export default function UmkmListPage({
 
                     {/* Category Filter - Ocean Theme */}
                     {allCategories && allCategories.length > 1 && (
-                        <div className="mb-8">
-                            <div className="flex flex-wrap justify-center gap-4">
-                                {allCategories.map((category) => (
-                                    <button
-                                        key={category.name}
-                                        onClick={() => handleCategoryFilter(category.name)}
-                                        className={`group flex items-center space-x-3 px-6 py-3 rounded-full font-medium transition-all duration-300 shadow-2xl backdrop-blur-md ${
-                                            selectedCategory === category.name
-                                                ? 'bg-[#64FFDA] text-[rgb(12,52,76)] border border-[#64FFDA] scale-105'
-                                                : 'bg-white/10 text-white border border-white/20 hover:bg-white/15 hover:border-[#64FFDA]/40 hover:shadow-2xl hover:shadow-[#64FFDA]/40'
-                                        }`}
-                                    >
-                                        <span>{category.name}</span>
-                                        <span className={`text-xs px-2 py-1 rounded-full ${
-                                            selectedCategory === category.name
-                                                ? 'bg-[rgb(12,52,76)] text-[#64FFDA]'
-                                                : 'bg-white/20 text-white'
-                                        }`}>
-                                            {category.count}
-                                        </span>
-                                    </button>
-                                ))}
+                        <div className="mb-2">
+                        {/* Container dengan padding untuk shadow */}
+                            <div className="px-4 py-3">
+                                {/* Scroll container */}
+                                <div className="overflow-x-auto scrollbar-hide">
+                                    <div className="flex justify-center gap-4 min-w-max mx-auto w-fit mt-4 mb-8 px-2">
+                                        {allCategories.map((category) => (
+                                            <button
+                                                key={category.name}
+                                                onClick={() => handleCategoryFilter(category.name)}
+                                                className={`group flex items-center space-x-3 px-6 py-3 rounded-full font-medium transition-all duration-300 shadow-lg backdrop-blur-md whitespace-nowrap ${
+                                                    selectedCategory === category.name
+                                                        ? 'bg-[#64FFDA] text-[rgb(12,52,76)] border border-[#64FFDA] scale-105'
+                                                        : 'bg-white/10 text-white border border-white/20 hover:bg-white/15 hover:border-[#64FFDA]/40 hover:shadow-xl hover:shadow-[#64FFDA]/40'
+                                                }`}
+                                            >
+                                                <span className="text-sm">{category.name}</span>
+                                                <span className={`text-xs px-2 py-0.5 rounded-full ${
+                                                    selectedCategory === category.name
+                                                        ? 'bg-[rgb(12,52,76)] text-[#64FFDA]'
+                                                        : 'bg-white/20 text-white'
+                                                }`}>
+                                                    {category.count}
+                                                </span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {/* Scroll indicator for mobile */}
+                            <div className="md:hidden text-center mt-4">
+                                <p className="text-xs text-white/60">← Geser untuk melihat kategori lainnya →</p>
                             </div>
                         </div>
                     )}
@@ -304,18 +335,18 @@ export default function UmkmListPage({
                         <>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
                                 {safeUmkms.data.map((umkm) => {
-                                    const displayImage = getDisplayImage(umkm);
+                                    const displayImageData = getDisplayImage(umkm);
                                     const todayHours = getTodayOpeningHours(umkm);
                                     
                                     return (
                                         <div key={umkm.id} className="bg-white/10 backdrop-blur-md rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group flex flex-col h-full border border-white/20 hover:border-[#64FFDA]/40">
                                             {/* Image Section */}
                                             <div className="relative h-48 bg-gradient-to-br from-white/5 to-white/10">
-                                                {displayImage ? (
+                                                {displayImageData.type === 'photo' ? (
                                                     <>
                                                         <img 
-                                                            src={displayImage} 
-                                                            alt={umkm.name}
+                                                            src={displayImageData.src} 
+                                                            alt={displayImageData.alt}
                                                             className="w-full h-full object-cover"
                                                             onError={(e) => {
                                                                 const target = e.currentTarget;
@@ -327,12 +358,12 @@ export default function UmkmListPage({
                                                             }}
                                                         />
                                                         <div className="emoji-fallback hidden w-full h-full flex items-center justify-center absolute inset-0">
-                                                            <span className="text-6xl">{umkm.image}</span>
+                                                            <span className="text-6xl">{umkm.image || '🏪'}</span>
                                                         </div>
                                                     </>
                                                 ) : (
                                                     <div className="w-full h-full flex items-center justify-center">
-                                                        <span className="text-6xl">{umkm.image}</span>
+                                                        <span className="text-6xl">{displayImageData.src}</span>
                                                     </div>
                                                 )}
                                                 

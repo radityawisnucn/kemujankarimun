@@ -73,12 +73,32 @@ export default function UmkmPrograms({ featured_umkms, categories, stats }: Prop
         total_products: 0,
     };
 
-    // Helper function untuk mendapatkan display image
+    // PERBAIKAN: Helper function untuk mendapatkan display image - ICON HANYA SEBAGAI FALLBACK
     const getDisplayImage = (umkm: Umkm) => {
+        // PRIORITAS 1: Display photos
         if (umkm.display_photos && umkm.display_photos.length > 0) {
-            return `/storage/umkm/display/${umkm.display_photos[0]}`;
+            return {
+                type: 'photo',
+                src: `/storage/umkm/display/${umkm.display_photos[0]}`,
+                alt: umkm.name
+            };
         }
-        return null;
+        
+        // PRIORITAS 2: Menu photo
+        if (umkm.menu_photo) {
+            return {
+                type: 'photo',
+                src: `/storage/umkm/menu/${umkm.menu_photo}`,
+                alt: `${umkm.name} - Menu`
+            };
+        }
+        
+        // PRIORITAS 3: Icon emoji HANYA sebagai fallback
+        return {
+            type: 'emoji',
+            src: umkm.image || '🏪',
+            alt: umkm.name
+        };
     };
 
     // Helper function untuk mendapatkan jam buka hari ini
@@ -121,12 +141,50 @@ export default function UmkmPrograms({ featured_umkms, categories, stats }: Prop
         }
     }, [safeCategories, safeFeaturedUmkms]);
 
-    // Filter UMKM berdasarkan kategori yang dipilih
+    // PERBAIKAN: Filter UMKM berdasarkan kategori dengan limit yang sesuai - LOGIC DIPERBAIKI
     const filteredUmkms = useMemo(() => {
         if (selectedCategory === 'Semua') {
-            return safeFeaturedUmkms;
+            // Untuk "Semua", ambil maksimal 6 dengan diversitas kategori
+            const categoriesUsed = new Set<string>();
+            const diverseUmkms: Umkm[] = [];
+            const remainingUmkms: Umkm[] = [];
+            
+            // Sort semua UMKM terlebih dahulu berdasarkan prioritas
+            const sortedUmkms = [...safeFeaturedUmkms].sort((a, b) => {
+                if (a.is_verified !== b.is_verified) return b.is_verified ? 1 : -1;
+                if (a.rating !== b.rating) return b.rating - a.rating;
+                return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+            });
+            
+            // Prioritas 1: Ambil 1 UMKM terbaik dari setiap kategori
+            sortedUmkms.forEach(umkm => {
+                if (!categoriesUsed.has(umkm.category) && categoriesUsed.size < 5) {
+                    categoriesUsed.add(umkm.category);
+                    diverseUmkms.push(umkm);
+                } else {
+                    remainingUmkms.push(umkm);
+                }
+            });
+            
+            // Prioritas 2: Tambahkan UMKM terbaik lainnya sampai total 6
+            const finalUmkms = [...diverseUmkms];
+            for (let i = 0; i < remainingUmkms.length && finalUmkms.length < 6; i++) {
+                finalUmkms.push(remainingUmkms[i]);
+            }
+            
+            return finalUmkms;
+        } else {
+            // Untuk kategori spesifik, ambil maksimal 3 terbaik
+            return safeFeaturedUmkms
+                .filter(umkm => umkm.category === selectedCategory)
+                .sort((a, b) => {
+                    // Sort by verified status, then rating, then created_at
+                    if (a.is_verified !== b.is_verified) return b.is_verified ? 1 : -1;
+                    if (a.rating !== b.rating) return b.rating - a.rating;
+                    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+                })
+                .slice(0, 3); // Maksimal 3 untuk kategori spesifik
         }
-        return safeFeaturedUmkms.filter(umkm => umkm.category === selectedCategory);
     }, [safeFeaturedUmkms, selectedCategory]);
 
     return (
@@ -164,36 +222,47 @@ export default function UmkmPrograms({ featured_umkms, categories, stats }: Prop
 
                 {/* Category Filter - Ocean Theme */}
                 {allCategories && allCategories.length > 1 && (
-                    <div className="mb-8">
-                        <div className="flex flex-wrap justify-center gap-4">
-                            {allCategories.map((category) => (
-                                <button
-                                    key={category.name}
-                                    onClick={() => setSelectedCategory(category.name)}
-                                    className={`group flex items-center space-x-3 px-6 py-3 rounded-full font-medium transition-all duration-300 shadow-2xl backdrop-blur-md ${
-                                        selectedCategory === category.name
-                                            ? 'bg-[#64FFDA] text-[rgb(12,52,76)] border border-[#64FFDA] scale-105'
-                                            : 'bg-white/10 text-white border border-white/20 hover:bg-white/15 hover:border-[#64FFDA]/40 hover:shadow-2xl hover:shadow-[#64FFDA]/40'
-                                    }`}
-                                >
-                                    <span>{category.name}</span>
-                                    <span className={`text-xs px-2 py-1 rounded-full ${
-                                        selectedCategory === category.name
-                                            ? 'bg-[rgb(12,52,76)] text-[#64FFDA]'
-                                            : 'bg-white/20 text-white'
-                                    }`}>
-                                        {category.count}
-                                    </span>
-                                </button>
-                            ))}
+                    <div className="mb-2">
+                        {/* Container dengan padding untuk shadow */}
+                            <div className="px-4 py-3">
+                                {/* Scroll container */}
+                                <div className="overflow-x-auto scrollbar-hide">
+                                    <div className="flex justify-center gap-4 min-w-max mx-auto w-fit mt-4 mb-8 mx-2">
+                                        {allCategories.map((category) => (
+                                            <button
+                                                key={category.name}
+                                                onClick={() => setSelectedCategory(category.name)}
+                                                className={`group flex items-center space-x-3 px-6 py-3 rounded-full font-medium transition-all duration-300 shadow-lg backdrop-blur-md whitespace-nowrap ${
+                                                    selectedCategory === category.name
+                                                        ? 'bg-[#64FFDA] text-[rgb(12,52,76)] border border-[#64FFDA] scale-105'
+                                                        : 'bg-white/10 text-white border border-white/20 hover:bg-white/15 hover:border-[#64FFDA]/40 hover:shadow-xl hover:shadow-[#64FFDA]/40'
+                                                }`}
+                                            >
+                                                <span className="text-sm">{category.name}</span>
+                                                <span className={`text-xs px-2 py-0.5 rounded-full ${
+                                                    selectedCategory === category.name
+                                                        ? 'bg-[rgb(12,52,76)] text-[#64FFDA]'
+                                                        : 'bg-white/20 text-white'
+                                                }`}>
+                                                    {category.count}
+                                                </span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {/* Scroll indicator for mobile */}
+                            <div className="md:hidden text-center mt-4">
+                                <p className="text-xs text-white/60">← Geser untuk melihat kategori lainnya →</p>
+                            </div>
                         </div>
-                    </div>
-                )}
+                    )}
 
                 {/* UMKM Grid - Data dari Admin Panel dengan Filter */}
                 {safeFeaturedUmkms && safeFeaturedUmkms.length > 0 ? (
                     <>
-                        {/* Current filter info */}
+                        {/* Current filter info dengan informasi limit */}
                         <div className="mb-6 text-center">
                             <p className="text-white/80">
                                 Menampilkan {filteredUmkms.length} UMKM 
@@ -204,18 +273,18 @@ export default function UmkmPrograms({ featured_umkms, categories, stats }: Prop
                         {filteredUmkms.length > 0 ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
                                 {filteredUmkms.map((umkm) => {
-                                    const displayImage = getDisplayImage(umkm);
+                                    const displayImageData = getDisplayImage(umkm);
                                     const todayHours = getTodayOpeningHours(umkm);
                                     
                                     return (
                                         <div key={umkm.id} className="bg-white/10 backdrop-blur-md rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group flex flex-col h-full border border-white/20 hover:border-[#64FFDA]/40">
-                                            {/* Image Section */}
+                                            {/* Image Section - PERBAIKAN */}
                                             <div className="relative h-48 bg-gradient-to-br from-blue-50 to-blue-100">
-                                                {displayImage ? (
+                                                {displayImageData.type === 'photo' ? (
                                                     <>
                                                         <img 
-                                                            src={displayImage} 
-                                                            alt={umkm.name}
+                                                            src={displayImageData.src} 
+                                                            alt={displayImageData.alt}
                                                             className="w-full h-full object-cover"
                                                             onError={(e) => {
                                                                 const target = e.currentTarget;
@@ -227,12 +296,12 @@ export default function UmkmPrograms({ featured_umkms, categories, stats }: Prop
                                                             }}
                                                         />
                                                         <div className="emoji-fallback hidden w-full h-full flex items-center justify-center absolute inset-0">
-                                                            <span className="text-6xl">{umkm.image}</span>
+                                                            <span className="text-6xl">{umkm.image || '🏪'}</span>
                                                         </div>
                                                     </>
                                                 ) : (
                                                     <div className="w-full h-full flex items-center justify-center">
-                                                        <span className="text-6xl">{umkm.image}</span>
+                                                        <span className="text-6xl">{displayImageData.src}</span>
                                                     </div>
                                                 )}
                                                 
@@ -288,13 +357,13 @@ export default function UmkmPrograms({ featured_umkms, categories, stats }: Prop
                                                     <span className="text-sm text-white/70 line-clamp-2 leading-relaxed">{umkm.address}</span>
                                                 </div>
 
-                                                {/* Products */}
+                                                {/* Products - PERBAIKAN UNTUK ERROR */}
                                                 <div className="mb-4 flex-shrink-0">
                                                     <h4 className="text-sm font-medium text-white mb-2">Produk:</h4>
                                                     <div className="flex flex-wrap gap-1 min-h-[2rem]">
-                                                        {umkm.products && umkm.products.length > 0 ? (
+                                                        {umkm.products && Array.isArray(umkm.products) && umkm.products.length > 0 ? (
                                                             <>
-                                                                {umkm.products.slice(0, 3).map((product, index) => (
+                                                                {umkm.products.slice(0, 3).map((product: string, index: number) => (
                                                                     <span
                                                                         key={index}
                                                                         className="inline-block bg-white/10 text-white text-xs px-2 py-1 rounded truncate max-w-[120px] border border-white/20"

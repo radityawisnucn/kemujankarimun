@@ -20,6 +20,7 @@ class Umkm extends Model
         'contact',
         'rating',
         'image',
+        'price_range',     
         'display_photos',     
         'menu_photo',    
         'instagram',
@@ -99,13 +100,14 @@ class Umkm extends Model
     public static function getCategories()
     {
         return [
-            'Ikan & Seafood',
-            'Rumput Laut',
+            'Ikan, Seafood, & Rumput Laut',
             'Warung & Kuliner',
-            'Kerajinan',
-            'Jasa'
+            'Kerajinan & Jasa',
+            'Penginapan',
+            'Wisata'
         ];
     }
+    
 
     // Method untuk mendapatkan jam buka default
     public static function getDefaultOpeningHours()

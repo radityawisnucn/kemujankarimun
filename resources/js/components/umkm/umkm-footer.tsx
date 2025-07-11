@@ -79,7 +79,6 @@ export default function UmkmFooter() {
                             <div className="flex items-start space-x-3">
                                 <MapPin className="w-5 h-5 text-[#4DD0E1] flex-shrink-0 mt-0.5" />
                                 <div>
-                                    <p className="text-[#BBE1FA] text-sm font-medium">Alamat</p>
                                     <p className="text-[#BBE1FA] text-sm leading-relaxed">
                                         Desa Kemujan<br />
                                         Karimunjawa<br />
@@ -91,7 +90,6 @@ export default function UmkmFooter() {
                             <div className="flex items-center space-x-3">
                                 <Globe className="w-5 h-5 text-[#4DD0E1] flex-shrink-0" />
                                 <div>
-                                    <p className="text-[#BBE1FA] text-sm font-medium">Website</p>
                                     <a 
                                         href="https://olahlautkemujan.com" 
                                         target="_blank" 

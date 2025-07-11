@@ -59,20 +59,21 @@ class UmkmController extends Controller
 
     public function store(Request $request)
     {
+        // Validation tanpa category dulu
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'owner' => 'required|string|max:255',
-            'category' => 'required|in:' . implode(',', Umkm::getCategories()),
             'description' => 'required|string',
             'address' => 'required|string',
             'products' => 'required|array|min:1',
             'products.*' => 'required|string|max:255',
             'contact' => 'required|string|max:20',
             'rating' => 'nullable|numeric|min:0|max:5',
-            'image' => 'required|string|max:10', // Icon wajib dipilih
+            'image' => 'required|string|max:10',
+            'price_range' => 'nullable|string|max:100', 
             'display_photos' => 'nullable|array|max:3',
-            'display_photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-            'menu_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'display_photos.*' => 'image|mimes:jpeg,png,jpg,gif,heic|max:5120',
+            'menu_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,heic|max:5120',
             'instagram' => 'nullable|string|max:255',
             'facebook' => 'nullable|string|max:255',
             'opening_hours' => 'nullable|array',
@@ -81,6 +82,19 @@ class UmkmController extends Controller
             'opening_hours.*.close_time' => 'nullable|string',
             'is_active' => 'boolean'
         ]);
+
+        // Manual category validation
+        $availableCategories = Umkm::getCategories();
+        $selectedCategory = $request->input('category');
+        
+        if (!$selectedCategory || !in_array($selectedCategory, $availableCategories)) {
+            return back()->withErrors([
+                'category' => 'Silakan pilih kategori yang valid dari: ' . implode(', ', $availableCategories)
+            ])->withInput();
+        }
+        
+        // Add category to validated data
+        $validated['category'] = $selectedCategory;
 
         // Custom validation: Harus ada foto display atau icon
         if (!$request->hasFile('display_photos') && empty($validated['image'])) {
@@ -105,14 +119,13 @@ class UmkmController extends Controller
         }
         $validated['display_photos'] = $displayPhotos;
 
-        // Handle menu photo upload
+        // Handle menu photo upload with HEIC conversion
         if ($request->hasFile('menu_photo')) {
             $menuPhoto = $request->file('menu_photo');
             $filename = Str::random(20) . '.' . $menuPhoto->getClientOriginalExtension();
             $menuPhoto->storeAs('umkm/menu', $filename, 'public');
             $validated['menu_photo'] = $filename;
         }
-
         Umkm::create($validated);
 
         return redirect()->route('admin.umkm.index')
@@ -140,7 +153,6 @@ class UmkmController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'owner' => 'required|string|max:255',
-            'category' => 'required|in:' . implode(',', Umkm::getCategories()),
             'description' => 'required|string',
             'address' => 'required|string',
             'products' => 'required|array|min:1',
@@ -148,9 +160,10 @@ class UmkmController extends Controller
             'contact' => 'required|string|max:20',
             'rating' => 'nullable|numeric|min:0|max:5',
             'image' => 'required|string|max:10',
+            'price_range' => 'nullable|string|max:100', 
             'display_photos' => 'nullable|array|max:3',
-            'display_photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-            'menu_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'display_photos.*' => 'image|mimes:jpeg,png,jpg,gif,heic|max:5120',
+            'menu_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,heic|max:5120',
             'remove_display_photos' => 'nullable|array',
             'remove_display_photos.*' => 'string',
             'remove_menu_photo' => 'nullable|boolean',
@@ -159,6 +172,19 @@ class UmkmController extends Controller
             'opening_hours' => 'nullable|string', // JSON string dari frontend
             'is_active' => 'nullable|boolean'
         ]);
+
+        // Manual category validation (sama seperti store method)
+        $availableCategories = Umkm::getCategories();
+        $selectedCategory = $request->input('category');
+        
+        if (!$selectedCategory || !in_array($selectedCategory, $availableCategories)) {
+            return back()->withErrors([
+                'category' => 'Silakan pilih kategori yang valid dari: ' . implode(', ', $availableCategories)
+            ])->withInput();
+        }
+        
+        // Add category to validated data
+        $validated['category'] = $selectedCategory;
 
         // Parse opening hours JSON jika ada
         if (isset($validated['opening_hours'])) {

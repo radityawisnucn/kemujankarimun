@@ -250,7 +250,9 @@ function ProgramCard({ program, index }) {
                             </div>
 
                             <div className="flex gap-3">
-                                <button className={`flex-1 group relative overflow-hidden border transition-all duration-300 flex items-center justify-center gap-2 text-sm font-medium px-4 py-3 rounded-lg ${theme.border}`}
+                                <button 
+                                    onClick={() => window.open('https://drive.google.com/drive/folders/1tdvRXBcOGRU63-T6jRpcYU4XRJxDP6iX?usp=sharing', '_blank')}
+                                    className={`flex-1 group relative overflow-hidden border transition-all duration-300 flex items-center justify-center gap-2 text-sm font-medium px-4 py-3 rounded-lg ${theme.border}`}
                                     style={{ color: theme.accent }}
                                 >
                                     <FileText className="w-4 h-4" />
@@ -698,7 +700,7 @@ export default function ProgramKerja() {
 
                                                 <div className="text-center">
                                                     <button 
-                                                        onClick={() => window.open('https://drive.google.com/drive/folders/YOUR_FOLDER_ID', '_blank')}
+                                                        onClick={() => window.open('https://drive.google.com/drive/folders/1tdvRXBcOGRU63-T6jRpcYU4XRJxDP6iX?usp=sharing', '_blank')}
                                                         className="group relative overflow-hidden bg-gradient-to-r from-[rgb(12,52,76)] to-blue-500 text-white px-8 py-4 rounded-xl hover:shadow-lg transition-all duration-300 font-semibold text-lg inline-flex items-center gap-3"
                                                     >
                                                         <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">

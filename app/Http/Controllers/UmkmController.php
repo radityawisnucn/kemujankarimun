@@ -1,5 +1,8 @@
 <?php
 
+// File: app/Http/Controllers/UmkmController.php
+// Update method index() dan tambahkan helper methods
+
 namespace App\Http\Controllers;
 
 use App\Models\Umkm;
@@ -24,16 +27,12 @@ class UmkmController extends Controller
         $stats = [
             'total_umkm' => Umkm::where('is_active', true)->count(),
             'total_products' => $this->getTotalProducts(),
-            'certified_halal' => Umkm::where('is_active', true)->where('is_verified', true)->count(),
+            'total_categories' => Umkm::where('is_active', true)->distinct('category')->count(),
             'revenue_increase' => 45 // Data statis untuk persentase peningkatan
         ];
 
-        // Ambil UMKM unggulan untuk Programs Section (6 UMKM teratas berdasarkan rating)
-        $featured_umkms = Umkm::where('is_active', true)
-            ->orderBy('rating', 'desc')
-            ->orderBy('is_verified', 'desc') // Prioritaskan yang terverifikasi
-            ->take(6)
-            ->get();
+        // PERBAIKAN: Ambil UMKM unggulan dengan logika yang lebih baik
+        $featured_umkms = $this->getFeaturedUmkmsForHomepage();
 
         // Ambil data kategori dengan jumlah UMKM
         $categories = Umkm::getCategoryStats();
@@ -66,6 +65,85 @@ class UmkmController extends Controller
             'featured_products' => $featured_products,
             'featured_umkms' => $featured_umkms, // Data UMKM untuk Programs Section
             'categories' => $categories // Data kategori untuk quick links
+        ]);
+    }
+
+    /**
+     * BARU: Method untuk mendapatkan UMKM unggulan dengan distribusi kategori yang baik
+     */
+    private function getFeaturedUmkmsForHomepage()
+    {
+        // Ambil semua kategori yang ada
+        $categories = Umkm::where('is_active', true)
+            ->distinct('category')
+            ->pluck('category')
+            ->toArray();
+
+        $featuredUmkms = collect();
+        $maxPerCategory = 1; // Maksimal 1 UMKM per kategori untuk diversitas
+        $totalTarget = 6; // Target total 6 UMKM
+
+        // Prioritas 1: Ambil 1 UMKM terbaik dari setiap kategori (maksimal 5 kategori berbeda)
+        foreach ($categories as $category) {
+            if ($featuredUmkms->count() >= 5) break; // Maksimal 5 kategori berbeda
+            
+            $umkmFromCategory = Umkm::where('is_active', true)
+                ->where('category', $category)
+                ->orderBy('is_verified', 'desc')
+                ->orderBy('rating', 'desc')
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            if ($umkmFromCategory) {
+                $featuredUmkms->push($umkmFromCategory);
+            }
+        }
+
+        // Prioritas 2: Jika belum mencapai 6, tambahkan UMKM terbaik yang belum masuk
+        if ($featuredUmkms->count() < $totalTarget) {
+            $excludeIds = $featuredUmkms->pluck('id')->toArray();
+            
+            $additionalUmkms = Umkm::where('is_active', true)
+                ->whereNotIn('id', $excludeIds)
+                ->orderBy('is_verified', 'desc')
+                ->orderBy('rating', 'desc')
+                ->orderBy('created_at', 'desc')
+                ->take($totalTarget - $featuredUmkms->count())
+                ->get();
+
+            $featuredUmkms = $featuredUmkms->concat($additionalUmkms);
+        }
+
+        return $featuredUmkms->take($totalTarget);
+    }
+
+    /**
+     * BARU: Method untuk mendapatkan UMKM berdasarkan kategori dengan limit
+     */
+    public function getUmkmsByCategory(Request $request)
+    {
+        $category = $request->get('category', 'Semua');
+        $limit = $request->get('limit', 3); // Default 3 untuk kategori spesifik
+
+        if ($category === 'Semua') {
+            // Untuk "Semua", gunakan logic yang sama seperti homepage tapi dengan limit 6
+            $umkms = $this->getFeaturedUmkmsForHomepage();
+        } else {
+            // Untuk kategori spesifik, ambil maksimal 3 terbaik
+            $umkms = Umkm::where('is_active', true)
+                ->where('category', $category)
+                ->orderBy('is_verified', 'desc')
+                ->orderBy('rating', 'desc')
+                ->orderBy('created_at', 'desc')
+                ->take($limit)
+                ->get();
+        }
+
+        return response()->json([
+            'umkms' => $umkms,
+            'category' => $category,
+            'total' => $umkms->count(),
+            'limit_applied' => $limit
         ]);
     }
 
@@ -126,6 +204,13 @@ class UmkmController extends Controller
         // Ambil data untuk filter kategori
         $categories = Umkm::getCategoryStats();
 
+        // TAMBAHKAN: Hitung statistik untuk halaman list
+        $stats = [
+            'total_umkm' => Umkm::where('is_active', true)->count(),
+            'total_products' => $this->getTotalProducts(),
+            'total_categories' => Umkm::where('is_active', true)->distinct('category')->count(),
+        ];
+
         // Tentukan halaman yang akan di-render berdasarkan context
         $currentCategory = $request->get('category', 'Semua');
         $searchQuery = $request->get('search', '');
@@ -136,8 +221,11 @@ class UmkmController extends Controller
             'filters' => $request->only(['category', 'search']),
             'current_category' => $currentCategory,
             'search_query' => $searchQuery,
+            'stats' => $stats, // TAMBAHAN: Kirim stats ke frontend
         ]);
     }
+
+    // ... sisa method lainnya tetap sama ...
 
     /**
      * Display specific UMKM detail - ENHANCED VERSION
@@ -236,39 +324,36 @@ class UmkmController extends Controller
             session()->flash('contact_message', $validated);
         }
 
-        // Optional: Send email notification to UMKM owner
-        // if ($validated['umkm_id']) {
-        //     $umkm = Umkm::find($validated['umkm_id']);
-        //     if ($umkm && $umkm->email) {
-        //         Mail::to($umkm->email)->send(new UmkmContactNotification($validated));
-        //     }
-        // }
-
         return back()->with('success', 'Pesan Anda telah terkirim! Tim kami akan segera menghubungi Anda.');
     }
 
     /**
-     * Get UMKMs by category (API endpoint)
+     * Get UMKMs by category (API endpoint) - DIPERBAIKI
      */
     public function getByCategory(Request $request)
     {
         $category = $request->get('category', 'Semua');
+        $limit = $request->get('limit', $category === 'Semua' ? 6 : 3);
         
-        $query = Umkm::where('is_active', true);
-        
-        if ($category !== 'Semua') {
-            $query->where('category', $category);
+        if ($category === 'Semua') {
+            // Untuk "Semua", gunakan logic diversitas kategori
+            $umkms = $this->getFeaturedUmkmsForHomepage();
+        } else {
+            // Untuk kategori spesifik, ambil yang terbaik dengan limit
+            $umkms = Umkm::where('is_active', true)
+                ->where('category', $category)
+                ->orderBy('is_verified', 'desc')
+                ->orderBy('rating', 'desc')
+                ->orderBy('created_at', 'desc')
+                ->take($limit)
+                ->get();
         }
-        
-        $umkms = $query->orderBy('is_verified', 'desc')
-                      ->orderBy('rating', 'desc')
-                      ->latest()
-                      ->get();
         
         return response()->json([
             'umkms' => $umkms,
             'category' => $category,
-            'total' => $umkms->count()
+            'total' => $umkms->count(),
+            'limit_applied' => $limit
         ]);
     }
 
@@ -280,54 +365,12 @@ class UmkmController extends Controller
         $stats = [
             'total_umkm' => Umkm::where('is_active', true)->count(),
             'total_products' => $this->getTotalProducts(),
-            'certified_halal' => Umkm::where('is_active', true)->where('is_verified', true)->count(),
+            'total_categories' => Umkm::where('is_active', true)->distinct('category')->count(),
             'categories_count' => Umkm::where('is_active', true)->distinct('category')->count(),
             'by_category' => Umkm::getCategoryStats(),
         ];
 
         return response()->json($stats);
-    }
-
-    /**
-     * Search UMKMs (API endpoint untuk autocomplete)
-     */
-    public function search(Request $request)
-    {
-        $query = $request->get('q', '');
-        
-        if (strlen($query) < 2) {
-            return response()->json([]);
-        }
-
-        $umkms = Umkm::where('is_active', true)
-            ->where(function($q) use ($query) {
-                $q->where('name', 'like', "%{$query}%")
-                  ->orWhere('owner', 'like', "%{$query}%")
-                  ->orWhere('category', 'like', "%{$query}%");
-            })
-            ->select(['id', 'name', 'owner', 'category', 'image'])
-            ->orderBy('is_verified', 'desc')
-            ->orderBy('rating', 'desc')
-            ->limit(10)
-            ->get();
-
-        return response()->json($umkms);
-    }
-
-    /**
-     * Get featured UMKMs (untuk homepage atau widget)
-     */
-    public function getFeatured(Request $request)
-    {
-        $limit = $request->get('limit', 6);
-        
-        $featured = Umkm::where('is_active', true)
-            ->orderBy('rating', 'desc')
-            ->orderBy('is_verified', 'desc')
-            ->take($limit)
-            ->get();
-
-        return response()->json($featured);
     }
 
     /**
@@ -345,178 +388,5 @@ class UmkmController extends Controller
                 }
                 return is_array($products) ? count($products) : 0;
             });
-    }
-
-    /**
-     * Helper method untuk validasi dan sanitasi input pencarian
-     */
-    private function sanitizeSearchInput($input)
-    {
-        return trim(strip_tags($input));
-    }
-
-    /**
-     * Method untuk export data UMKM (opsional)
-     */
-    public function export(Request $request)
-    {
-        $format = $request->get('format', 'json'); // json, csv, excel
-        
-        $umkms = Umkm::where('is_active', true)
-            ->orderBy('name')
-            ->get();
-
-        switch ($format) {
-            case 'csv':
-                // Implementation untuk CSV export
-                return $this->exportToCsv($umkms);
-            case 'excel':
-                // Implementation untuk Excel export
-                return $this->exportToExcel($umkms);
-            default:
-                return response()->json($umkms);
-        }
-    }
-
-    /**
-     * Helper method untuk CSV export
-     */
-    private function exportToCsv($umkms)
-    {
-        $filename = 'umkm_data_' . date('Y-m-d_H-i-s') . '.csv';
-        
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-        ];
-
-        $callback = function() use ($umkms) {
-            $file = fopen('php://output', 'w');
-            
-            // Header CSV
-            fputcsv($file, ['ID', 'Nama', 'Pemilik', 'Kategori', 'Alamat', 'Kontak', 'Rating', 'Status']);
-            
-            // Data
-            foreach ($umkms as $umkm) {
-                fputcsv($file, [
-                    $umkm->id,
-                    $umkm->name,
-                    $umkm->owner,
-                    $umkm->category,
-                    $umkm->address,
-                    $umkm->contact,
-                    $umkm->rating,
-                    $umkm->is_verified ? 'Terverifikasi' : 'Belum Terverifikasi'
-                ]);
-            }
-            
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
-    }
-
-    /**
-     * Helper method untuk Excel export (placeholder)
-     */
-    private function exportToExcel($umkms)
-    {
-        // Implementation untuk Excel export menggunakan library seperti PhpSpreadsheet
-        // Untuk sementara return JSON
-        return response()->json([
-            'message' => 'Excel export not implemented yet',
-            'data' => $umkms
-        ]);
-    }
-
-    /**
-     * Get UMKM contact messages (untuk admin)
-     */
-    public function getContactMessages(Request $request)
-    {
-        if (!class_exists('App\Models\UmkmContact')) {
-            return response()->json([
-                'message' => 'UmkmContact model not found',
-                'data' => []
-            ]);
-        }
-
-        $messages = UmkmContact::with('umkm')
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
-
-        return response()->json($messages);
-    }
-
-    /**
-     * Mark contact message as read
-     */
-    public function markContactAsRead($contactId)
-    {
-        if (!class_exists('App\Models\UmkmContact')) {
-            return response()->json(['message' => 'UmkmContact model not found']);
-        }
-
-        $contact = UmkmContact::findOrFail($contactId);
-        $contact->update(['status' => 'read']);
-
-        return response()->json(['message' => 'Contact marked as read']);
-    }
-
-    /**
-     * Get opening hours for specific UMKM (API endpoint)
-     */
-    public function getOpeningHours(Umkm $umkm)
-    {
-        $openingHours = $umkm->opening_hours;
-        
-        if (is_string($openingHours)) {
-            $openingHours = json_decode($openingHours, true);
-        }
-
-        return response()->json([
-            'umkm_id' => $umkm->id,
-            'opening_hours' => $openingHours
-        ]);
-    }
-
-    /**
-     * Check if UMKM is currently open
-     */
-    public function isCurrentlyOpen(Umkm $umkm)
-    {
-        $openingHours = $umkm->opening_hours;
-        
-        if (is_string($openingHours)) {
-            $openingHours = json_decode($openingHours, true);
-        }
-
-        if (!$openingHours) {
-            return response()->json([
-                'is_open' => false,
-                'message' => 'Opening hours not available'
-            ]);
-        }
-
-        $days = ['minggu', 'senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu'];
-        $today = $days[date('w')];
-        $currentTime = date('H:i');
-
-        $todayHours = $openingHours[$today] ?? null;
-
-        if (!$todayHours || !$todayHours['is_open']) {
-            return response()->json([
-                'is_open' => false,
-                'message' => 'Closed today'
-            ]);
-        }
-
-        $isOpen = $currentTime >= $todayHours['open_time'] && $currentTime <= $todayHours['close_time'];
-
-        return response()->json([
-            'is_open' => $isOpen,
-            'today_hours' => $todayHours,
-            'current_time' => $currentTime
-        ]);
     }
 }

@@ -36,7 +36,7 @@ interface Umkm {
     description: string;
     address: string;
     products: string[];
-                        contact: string;
+    contact: string;
     rating: number;
     image: string;
     display_photos?: string[];
@@ -77,20 +77,11 @@ export default function UmkmDetail({ umkm, related_umkms = [] }: Props) {
         visit_time: ''
     });
 
-    // Helper function untuk mendapatkan display image
+    // PERBAIKAN: Helper function untuk mendapatkan display image - ICON HANYA SEBAGAI FALLBACK
     const getDisplayImages = (umkm: Umkm) => {
         const images = [];
         
-        // Main image (emoji fallback)
-        if (umkm.image) {
-            images.push({
-                type: 'emoji',
-                src: umkm.image,
-                alt: `${umkm.name} - Main`
-            });
-        }
-
-        // Display photos
+        // PRIORITAS 1: Display photos
         if (umkm.display_photos && umkm.display_photos.length > 0) {
             umkm.display_photos.forEach((photo, index) => {
                 images.push({
@@ -101,7 +92,7 @@ export default function UmkmDetail({ umkm, related_umkms = [] }: Props) {
             });
         }
 
-        // Menu photo
+        // PRIORITAS 2: Menu photo
         if (umkm.menu_photo) {
             images.push({
                 type: 'menu',
@@ -110,11 +101,61 @@ export default function UmkmDetail({ umkm, related_umkms = [] }: Props) {
             });
         }
 
+        // PRIORITAS 3: Icon emoji HANYA sebagai fallback jika tidak ada foto sama sekali
+        if (images.length === 0 && umkm.image) {
+            images.push({
+                type: 'emoji',
+                src: umkm.image,
+                alt: `${umkm.name} - Icon`
+            });
+        }
+
+        // Default fallback jika tidak ada gambar dan icon
         return images.length > 0 ? images : [{
             type: 'emoji',
             src: '🏪',
-            alt: 'Default UMKM'
+            alt: 'Default UMKM Icon'
         }];
+    };
+
+    // PERBAIKAN: Function untuk format deskripsi - SOLUSI TEPAT SASARAN
+    const formatDescription = (description: string) => {
+        if (!description || description.trim().length === 0) {
+            return '';
+        }
+
+        // Jika sudah ada line breaks dari panel admin, pertahankan
+        if (description.includes('\n')) {
+            return description.trim();
+        }
+
+        let formatted = description.trim().replace(/\s+/g, ' ');
+        
+        // Pattern untuk item menu: Nama + Rp + harga
+        const menuItems = [];
+        const menuPattern = /([A-Z][a-zA-Z\s\/-]*?)\s+(Rp\d+\.?\d*)/g;
+        
+        let match;
+        let introText = '';
+        
+        while ((match = menuPattern.exec(formatted)) !== null) {
+            // Ambil text sebelum menu pertama sebagai intro
+            if (menuItems.length === 0) {
+                introText = formatted.substring(0, match.index).trim();
+            }
+            
+            // Tambahkan item menu
+            menuItems.push(`${match[1].trim()} ${match[2]}`);
+        }
+        
+        // Gabungkan intro dengan menu items
+        if (introText && menuItems.length > 0) {
+            return `${introText}\n\n${menuItems.join('\n')}`;
+        } else if (menuItems.length > 0) {
+            return menuItems.join('\n');
+        } else {
+            return formatted;
+        }
     };
 
     // Helper function untuk render rating stars
@@ -211,23 +252,23 @@ export default function UmkmDetail({ umkm, related_umkms = [] }: Props) {
             {/* Navbar */}
             <UmkmNavbar activeMenu="" />
 
-            <div className="min-h-screen bg-gray-50 pt-20">
+            <div className="min-h-screen bg-[rgb(12,52,76)] pt-20">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     
                     {/* Breadcrumb & Back Button */}
                     <div className="flex items-center space-x-4 mb-8">
                         <Link 
                             href="/umkm/list-umkm"
-                            className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 transition-colors"
+                            className="flex items-center space-x-2 text-white hover:text-[#64FFDA] transition-colors"
                         >
                             <ArrowLeft className="w-5 h-5" />
                             <span>Kembali ke Daftar UMKM</span>
                         </Link>
-                        <span className="text-gray-400">/</span>
-                        <span className="text-gray-600">{umkm.name}</span>
+                        <span className="text-white">/</span>
+                        <span className="text-white/80">{umkm.name}</span>
                     </div>
 
-                    {/* NEW LAYOUT: Main Content Grid - Foto di kiri, Info di kanan */}
+                    {/* Main Content Grid - Foto di kiri, Info di kanan */}
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
                         
                         {/* Left Side - Images (2/3 width on desktop) */}
@@ -257,10 +298,10 @@ export default function UmkmDetail({ umkm, related_umkms = [] }: Props) {
                                     
                                     {/* Image fallback */}
                                     <div className="emoji-fallback hidden w-full h-full flex items-center justify-center absolute inset-0 bg-gradient-to-br from-blue-50 to-blue-100">
-                                        <span className="text-8xl lg:text-9xl">🏪</span>
+                                        <span className="text-8xl lg:text-9xl">{umkm.image || '🏪'}</span>
                                     </div>
 
-                                    {/* Navigation arrows */}
+                                    {/* Navigation arrows - HANYA TAMPIL JIKA ADA LEBIH DARI 1 GAMBAR */}
                                     {displayImages.length > 1 && (
                                         <>
                                             <button
@@ -278,7 +319,7 @@ export default function UmkmDetail({ umkm, related_umkms = [] }: Props) {
                                         </>
                                     )}
 
-                                    {/* Image counter */}
+                                    {/* Image counter - HANYA TAMPIL JIKA ADA LEBIH DARI 1 GAMBAR */}
                                     {displayImages.length > 1 && (
                                         <div className="absolute bottom-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
                                             {selectedImageIndex + 1} / {displayImages.length}
@@ -287,7 +328,7 @@ export default function UmkmDetail({ umkm, related_umkms = [] }: Props) {
                                 </div>
                             </div>
 
-                            {/* Thumbnail Images */}
+                            {/* Thumbnail Images - HANYA TAMPIL JIKA ADA LEBIH DARI 1 GAMBAR */}
                             {displayImages.length > 1 && (
                                 <div className="grid grid-cols-4 gap-3">
                                     {displayImages.map((image, index) => (
@@ -482,10 +523,10 @@ export default function UmkmDetail({ umkm, related_umkms = [] }: Props) {
                             </div>
                         </div>
 
-                        {/* Description */}
+                        {/* PERBAIKAN: Description dengan format yang lebih baik */}
                         <h2 className="text-2xl font-bold text-gray-900 mb-6">Deskripsi</h2>
-                        <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed">
-                            <p>{umkm.description}</p>
+                        <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed whitespace-pre-line">
+                            {formatDescription(umkm.description)}
                         </div>
 
                         {/* Products */}

@@ -26,6 +26,7 @@ export default function CreateUmkm({ categories, defaultOpeningHours }: Props) {
         contact: '',
         rating: 0,
         image: '🏪',
+        price_range: '',
         display_photos: [] as File[],
         menu_photo: null as File | null,
         instagram: '',
@@ -335,6 +336,24 @@ export default function CreateUmkm({ categories, defaultOpeningHours }: Props) {
                                     />
                                     {errors.rating && <p className="text-red-500 text-sm mt-1">{errors.rating}</p>}
                                 </div>
+
+                                {/* Price Range */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Kisaran Harga (Opsional)
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={data.price_range}
+                                        onChange={(e) => setData('price_range', e.target.value)}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                                        placeholder="Contoh: Rp 10.000 - Rp 50.000"
+                                    />
+                                    {errors.price_range && <p className="text-red-500 text-sm mt-1">{errors.price_range}</p>}
+                                    <p className="text-gray-500 text-xs mt-1">
+                                        Kosongkan jika tidak ingin menampilkan kisaran harga
+                                    </p>
+                                </div>
                             </div>
 
                             {/* Description */}
@@ -465,7 +484,7 @@ export default function CreateUmkm({ categories, defaultOpeningHours }: Props) {
                                                     Upload foto display
                                                 </span>
                                                 <span className="text-xs text-gray-400">
-                                                    JPG, PNG (Max 2MB)
+                                                    JPG, PNG (Max 5MB)
                                                 </span>
                                             </label>
                                         </div>
@@ -539,7 +558,7 @@ export default function CreateUmkm({ categories, defaultOpeningHours }: Props) {
                                                     Upload foto menu/pricelist
                                                 </span>
                                                 <span className="text-xs text-gray-400">
-                                                    JPG, PNG (Max 2MB)
+                                                    JPG, PNG (Max 5MB)
                                                 </span>
                                             </label>
                                         </div>
