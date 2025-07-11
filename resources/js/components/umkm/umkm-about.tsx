@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, Anchor, Leaf, MapPin, PlayCircle, Download } from 'lucide-react';
+import { Anchor, Leaf, MapPin, PlayCircle } from 'lucide-react';
 
 export default function AboutKemujan() {
     return (

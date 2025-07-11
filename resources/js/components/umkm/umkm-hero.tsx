@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from '@inertiajs/react';
-import { ChevronDown, MapPin, Users, Award } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import UmkmNavbar from './UmkmNavbar';
 
 interface Stats {

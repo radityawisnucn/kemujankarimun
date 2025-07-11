@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from '@inertiajs/react';
-import { MapPin, Phone, Mail, Globe, Instagram, Youtube, ExternalLink } from 'lucide-react';
+import { MapPin, Globe, Instagram, Youtube, ExternalLink } from 'lucide-react';
 
 export default function UmkmFooter() {
     return (

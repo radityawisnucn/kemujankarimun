@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
-import { Menu, X, Home, Store, LogOut } from 'lucide-react';
+import { Menu, X, Store, LogOut } from 'lucide-react';
 
 interface Props {
     children: React.ReactNode;
@@ -16,7 +16,16 @@ interface User {
 interface PageProps {
     auth: {
         user: User;
+      };
+    flash?: {
+        success?: string;
+        error?: string;
     };
+    errors?: Record<string, string>;
+}
+
+interface PageProps extends SharedProps {
+    [key: string]: string | number | boolean | object | undefined;
 }
 
 export default function AdminLayout({ children }: Props) {

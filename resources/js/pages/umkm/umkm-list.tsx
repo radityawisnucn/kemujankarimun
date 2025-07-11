@@ -6,15 +6,11 @@ import {
     Star, 
     MapPin, 
     Phone, 
-    CheckCircle, 
     ExternalLink,
     Instagram,
     Facebook,
-    ArrowRight,
     Users,
-    Award,
     ShoppingBag,
-    TrendingUp,
     Filter,
     Clock,
     Search,
@@ -109,13 +105,19 @@ export default function UmkmListPage({
     const [selectedCategory, setSelectedCategory] = useState(activeCategory);
 
     // Safety checks for data
-    const safeUmkms = umkms || { data: [], meta: { current_page: 1, last_page: 1, from: 0, to: 0, total: 0 }, links: [] };
-    const safeCategories = categories || [];
-    const safeFilters = filters || {};
-    const safeStats = stats || {
+    const safeUmkms = useMemo(() => 
+        umkms || { data: [], meta: { current_page: 1, last_page: 1, from: 0, to: 0, total: 0 }, links: [] }, 
+        [umkms]
+    );
+
+    const safeCategories = useMemo(() => categories || [], [categories]);
+
+    const safeFilters = useMemo(() => filters || {}, [filters]);
+
+    const safeStats = useMemo(() => stats || {
         total_umkm: safeUmkms.data.length,
         total_products: 0,
-    };
+    }, [stats, safeUmkms]);
 
     // PERBAIKAN: Helper function untuk mendapatkan display image - ICON HANYA SEBAGAI FALLBACK
     const getDisplayImage = (umkm: Umkm) => {

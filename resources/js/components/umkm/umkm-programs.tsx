@@ -4,14 +4,11 @@ import {
     Star, 
     MapPin, 
     Phone, 
-    CheckCircle, 
     ExternalLink,
     Instagram,
     Facebook,
     Users,
-    Award,
     ShoppingBag,
-    TrendingUp,
     Filter,
     Clock
 } from 'lucide-react';
@@ -66,12 +63,12 @@ export default function UmkmPrograms({ featured_umkms, categories, stats }: Prop
     const [selectedCategory, setSelectedCategory] = useState('Semua');
 
     // Safety checks for data
-    const safeFeaturedUmkms = featured_umkms || [];
-    const safeCategories = categories || [];
-    const safeStats = stats || {
+    const safeFeaturedUmkms = useMemo(() => featured_umkms || [], [featured_umkms]);
+    const safeCategories = useMemo(() => categories || [], [categories]);
+    const safeStats = useMemo(() => stats || {
         total_umkm: safeFeaturedUmkms.length,
         total_products: 0,
-    };
+    }, [stats, safeFeaturedUmkms]);
 
     // PERBAIKAN: Helper function untuk mendapatkan display image - ICON HANYA SEBAGAI FALLBACK
     const getDisplayImage = (umkm: Umkm) => {

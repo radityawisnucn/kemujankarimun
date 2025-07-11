@@ -1,4 +1,4 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import { useEffect } from 'react';
 import UmkmHero from '@/components/umkm/umkm-hero';
 import UmkmAbout from '@/components/umkm/umkm-about';
@@ -55,7 +55,7 @@ interface UmkmPageProps {
     categories?: CategoryStat[]; // Data kategori dengan jumlah
 }
 
-export default function UmkmPage({ stats, featured_products, featured_umkms, categories }: UmkmPageProps) {
+export default function UmkmPage({ stats, featured_umkms, categories }: UmkmPageProps) {
     
     // Handle hash navigation ketika halaman pertama kali load
     useEffect(() => {

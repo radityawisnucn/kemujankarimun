@@ -1,7 +1,7 @@
 // File: resources/js/pages/umkm/program-kerja.tsx
 
-import { Head, Link } from '@inertiajs/react';
-import { ArrowLeft, Users, GraduationCap, Building2, FileText, Globe, BarChart3, Scale, Video, Handshake, Target, Lightbulb, Clock, MapPin, Calendar, ChevronRight, ExternalLink, ArrowRight, X } from 'lucide-react';
+import { Head } from '@inertiajs/react';
+import { Users, GraduationCap, Building2, FileText, Globe, BarChart3, Scale, Video, Handshake, Target, Lightbulb, Clock, MapPin, Calendar, ChevronRight, ExternalLink, ArrowRight, X } from 'lucide-react';
 import { useState } from 'react';
 import UmkmNavbar from '@/components/umkm/UmkmNavbar';
 import UmkmFooter from '@/components/umkm/umkm-footer';

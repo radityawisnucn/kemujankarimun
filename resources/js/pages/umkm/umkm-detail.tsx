@@ -12,19 +12,10 @@ import {
     Mail,
     Clock,
     Globe,
-    Instagram,
-    Facebook,
     CheckCircle,
-    Calendar,
-    ShoppingBag,
-    Users,
     Verified,
-    ExternalLink,
     ChevronLeft,
     ChevronRight,
-    Heart,
-    Share2,
-    MessageCircle
 } from 'lucide-react';
 
 // Interface untuk UMKM data
@@ -118,22 +109,21 @@ export default function UmkmDetail({ umkm, related_umkms = [] }: Props) {
         }];
     };
 
-    // PERBAIKAN: Function untuk format deskripsi - SOLUSI TEPAT SASARAN
+    // Function format deskripsi
     const formatDescription = (description: string) => {
         if (!description || description.trim().length === 0) {
             return '';
         }
 
-        // Jika sudah ada line breaks dari panel admin, pertahankan
         if (description.includes('\n')) {
             return description.trim();
         }
 
-        let formatted = description.trim().replace(/\s+/g, ' ');
+        const formatted = description.trim().replace(/\s+/g, ' ');
         
         // Pattern untuk item menu: Nama + Rp + harga
         const menuItems = [];
-        const menuPattern = /([A-Z][a-zA-Z\s\/-]*?)\s+(Rp\d+\.?\d*)/g;
+        const menuPattern = /([A-Z][a-zA-Z\s-]*?)\s+(Rp\d+\.?\d*)/g;
         
         let match;
         let introText = '';

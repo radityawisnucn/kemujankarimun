@@ -1,6 +1,5 @@
-import { useState } from 'react';
-import { router } from '@inertiajs/react';
-import { Mail, Phone, MapPin, Send, ArrowRight, Linkedin, Github, Instagram } from 'lucide-react';
+import React from 'react';
+import { ArrowRight } from 'lucide-react';
 import { Link } from '@inertiajs/react';
 
 export default function UmkmContact() {

@@ -154,7 +154,7 @@ export default function EditUmkm({ umkm, categories, defaultOpeningHours }: Prop
         setData('products', newProducts);
     };
 
-    const updateOpeningHours = (day: string, field: string, value: any) => {
+    const updateOpeningHours = (day: string, field: string, value: boolean | string) => {
         const newOpeningHours = {
             ...data.opening_hours,
             [day]: {

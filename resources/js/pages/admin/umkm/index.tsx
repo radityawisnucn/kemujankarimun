@@ -15,7 +15,6 @@ import {
     MapPin,
     Phone,
     User,
-    ExternalLink,
     ChevronLeft,
     ChevronRight,
     Clock
@@ -123,19 +122,6 @@ export default function UmkmIndex({ umkms, categories, filters, stats }: Props) 
         });
     };
 
-    const renderStars = (rating: number) => {
-        return [...Array(5)].map((_, i) => (
-            <Star 
-                key={i} 
-                className={`w-4 h-4 ${
-                    i < Math.floor(rating) 
-                        ? 'text-yellow-400 fill-current' 
-                        : 'text-gray-300'
-                }`} 
-            />
-        ));
-    };
-
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString('id-ID', {
             year: 'numeric',
@@ -176,7 +162,7 @@ export default function UmkmIndex({ umkms, categories, filters, stats }: Props) 
         return currentTime >= openTime && currentTime <= closeTime;
     };
 
-    const getDisplayImage = (umkm: any) => {
+    const getDisplayImage = (umkm: Umkm) => {
         // Jika ada foto display, gunakan foto pertama
         if (umkm.display_photos && umkm.display_photos.length > 0) {
             return `/storage/umkm/display/${umkm.display_photos[0]}`;
